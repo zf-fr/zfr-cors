@@ -1,4 +1,4 @@
-zfr-cors
-========
+ZfrCors
+=======
 
-A Zend Framework 2 module that helps you to deal with Cross-Origin Resource Sharing (CORS)
+ZfrCors is a simple ZF2 module that helps you to deal with Cross-Origin Resource Sharing (CORS).
