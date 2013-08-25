@@ -25,57 +25,43 @@ use Zend\Http\Request as HttpRequest;
 use Zend\Mvc\MvcEvent;
 use ZfrCors\Exception\DisallowedOriginException;
 use ZfrCors\Service\CorsService;
+use ZfrRest\Http\Exception\AbstractHttpException;
 
 /**
- * CorsListener
+ * ExceptionListener
  *
  * @license MIT
  * @author  Florent Blaison <florent.blaison@gmail.com>
  */
-class CorsListener extends AbstractListenerAggregate
+class ExceptionListener extends AbstractListenerAggregate
 {
-    /**
-     * @var CorsService
-     */
-    protected $corsService;
-
-    /**
-     * @param CorsService $corsService
-     */
-    public function __construct(CorsService $corsService)
-    {
-        $this->corsService = $corsService;
-    }
-
     /**
      * {@inheritDoc}
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(MvcEvent::EVENT_ROUTE, array($this, 'onCors'), 1000);
+        $this->listeners[] = $events->attach('application.error', array($this, 'onDisallowedOriginException'), 1000);
     }
 
     /**
-     * Get the preflight options request authorization
+     * Capture DisallowedOriginException
      *
      * @param  MvcEvent $event
      * @return mixed
      */
-    public function onCors(MvcEvent $event)
+    public function onDisallowedOriginException(MvcEvent $event)
     {
-        /** @var $request HttpRequest */
-        $request  = $event->getRequest();
         /** @var $response HttpResponse */
-        $response = $event->getResponse();
+        $response  = $event->getResponse();
+        $exception = $event->getParam('exception');
 
-        $response = $this->corsService->prePopulateCorsResponse($request, $response);
-
-        if ($this->corsService->isPreflightRequest($request)) {
-            $response = $this->corsService->populateCorsResponse($response);
-
-            $event->setResult($response);
-
-            return $response;
+        // We just deal with our Http error codes here !
+        if (!$exception instanceof DisallowedOriginException || !$response instanceof HttpResponse) {
+            return;
         }
+
+        $response->setStatusCode(403);
+
+        $event->setResult($response);
     }
 }

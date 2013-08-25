@@ -16,40 +16,14 @@
  * and is licensed under the MIT license.
  */
 
-namespace ZfrCors;
-
-use Zend\EventManager\EventInterface;
-use Zend\ModuleManager\Feature\BootstrapListenerInterface;
-use Zend\ModuleManager\Feature\ConfigProviderInterface;
+namespace ZfrCors\Exception;
 
 /**
- * @licence MIT
+ * Exception interface for every ZfrCors exceptions
+ *
+ * @license MIT
  * @author  Florent Blaison <florent.blaison@gmail.com>
  */
-class Module implements
-    BootstrapListenerInterface,
-    ConfigProviderInterface
+interface ExceptionInterface
 {
-
-    /**
-     * {@inheritDoc}
-     */
-    public function onBootstrap(EventInterface $event)
-    {
-        /* @var $application \Zend\Mvc\Application */
-        $application     = $event->getTarget();
-        $serviceManager  = $application->getServiceManager();
-        $eventManager    = $application->getEventManager();
-
-        $eventManager->attach($serviceManager->get('ZfrCors\Mvc\ExceptionListener'));
-        $eventManager->attach($serviceManager->get('ZfrCors\Mvc\CorsListener'));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getConfig()
-    {
-        return include __DIR__ . '/../../config/module.config.php';
-    }
 }

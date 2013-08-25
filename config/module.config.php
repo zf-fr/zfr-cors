@@ -18,6 +18,10 @@
 
 return array(
     'service_manager' => array(
+        'invokables' => array(
+            'ZfrCors\Mvc\ExceptionListener' => 'ZfrCors\Mvc\ExceptionListener',
+        ),
+
         'factories' => array(
             'ZfrCors\Mvc\CorsListener'    => 'ZfrCors\Factory\CorsListenerFactory',
             'ZfrCors\Options\CorsOptions' => 'ZfrCors\Factory\CorsOptionsFactory',

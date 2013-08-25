@@ -18,6 +18,7 @@
 
 namespace ZfrCors\Service;
 
+use ZfrCors\Exception\DisallowedOriginException;
 use ZfrCors\Options\CorsOptions;
 use Zend\Http\Request as HttpRequest;
 use Zend\Http\Response as HttpResponse;
@@ -76,6 +77,7 @@ class CorsService
      * @param HttpRequest $request
      * @param HttpResponse $response
      * @return HttpResponse
+     * @throws \ZfrCors\Exception\DisallowedOriginException
      */
     public function prePopulateCorsResponse(HttpRequest $request, HttpResponse $response)
     {
@@ -85,8 +87,7 @@ class CorsService
                 $request->getHeader('Origin')->getFieldValue()
             );
         } else {
-            $response = new HttpResponse();
-            $response->setStatusCode(403);
+            throw new DisallowedOriginException();
         }
 
         return $response;
