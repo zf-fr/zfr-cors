@@ -12,7 +12,7 @@ matrix:
 
 before_script:
   - composer self-update
-  - composer update --prefer-source --dev
+  - composer update --prefer-source
 
 script:
   - ./vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml --exclude-group Performance
