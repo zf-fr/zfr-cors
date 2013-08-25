@@ -16,12 +16,27 @@
  * and is licensed under the MIT license.
  */
 
-namespace ZfrCors;
+namespace ZfrCorsTest;
+
+use PHPUnit_Framework_TestCase;
+use ZfrCors\Module;
 
 /**
+ * Tests for {@see \ZfrCors\Module}
+ *
  * @license MIT
+ * @author  Marco Pivetta <ocramius@gmail.com>
  */
-class Version
+class ModuleTest extends PHPUnit_Framework_TestCase
 {
-    const VERSION = '0.1.0';
+    /**
+     * @covers \ZfrCors\Module::getConfig
+     */
+    public function testGetConfig()
+    {
+        $module = new Module();
+
+        $this->assertInternalType('array', $module->getConfig());
+        $this->assertSame($module->getConfig(), unserialize(serialize($module->getConfig())), 'Config is serializable');
+    }
 }
