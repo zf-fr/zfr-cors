@@ -13,30 +13,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license.
+ * and is licensed under the MIT license. For more information, see
+ * <http://www.doctrine-project.org>.
  */
 
-namespace ZfrCorsTest;
+namespace ZfrCorsTest\Util;
 
-use PHPUnit_Framework_TestCase;
-use ZfrCors\Module;
+use Zend\ServiceManager\ServiceManager;
+use Zend\Test\Util\ModuleLoader;
 
 /**
- * Tests for {@see \ZfrCors\Module}
+ * Utility used to retrieve a freshly initialized module loader
  *
  * @license MIT
  * @author  Marco Pivetta <ocramius@gmail.com>
  */
-class ModuleTest extends PHPUnit_Framework_TestCase
+class ModuleLoaderFactory
 {
     /**
-     * @covers \ZfrCors\Module::getConfig
+     * @var array
      */
-    public function testGetConfig()
-    {
-        $module = new Module();
+    private static $config = array();
 
-        $this->assertInternalType('array', $module->getConfig());
-        $this->assertSame($module->getConfig(), unserialize(serialize($module->getConfig())), 'Config is serializable');
+    /**
+     * @param array $config
+     */
+    public static function setConfig(array $config)
+    {
+        static::$config = $config;
+    }
+
+    /**
+     * Builds a new module loader
+     *
+     * @param array $config
+     *
+     * @return ModuleLoader
+     */
+    public static function createModuleLoader(array $config = null)
+    {
+        return new ModuleLoader(isset($config) ? $config : static::$config);
     }
 }

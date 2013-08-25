@@ -16,7 +16,7 @@
  * and is licensed under the MIT license.
  */
 
-use ZfrCorsTest\Util\ServiceManagerFactory;
+use ZfrCorsTest\Util\ModuleLoaderFactory;
 
 ini_set('error_reporting', E_ALL);
 
@@ -46,5 +46,5 @@ foreach ($configFiles as $configFile) {
     }
 }
 
-ServiceManagerFactory::setApplicationConfig($config);
+ModuleLoaderFactory::setConfig($config);
 unset($files, $file, $loader, $configFiles, $configFile, $config);
