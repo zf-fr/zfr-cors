@@ -33,6 +33,7 @@ class CorsListenerFactory implements FactoryInterface
 {
     /**
      * {@inheritDoc}
+     * @return CorsListener
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {

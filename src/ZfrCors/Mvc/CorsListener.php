@@ -67,13 +67,14 @@ class CorsListener extends AbstractListenerAggregate
         /** @var $response HttpResponse */
         $response = $event->getResponse();
 
-        $this->corsService->prePopulateCorsResponse($request, $response);
+        $response = $this->corsService->prePopulateCorsResponse($request, $response);
 
-        if ($this->corsService->isPreflightRequest($request))
-        {
-            $this->corsService->populateCorsResponse($response);
+        if ($this->corsService->isPreflightRequest($request)) {
+            $response = $this->corsService->populateCorsResponse($response);
 
             $event->setResult($response);
+            $event->stopPropagation();
+
             return $response;
         }
     }

@@ -33,6 +33,7 @@ class CorsServiceFactory implements FactoryInterface
 {
     /**
      * {@inheritDoc}
+     * @return CorsService
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {

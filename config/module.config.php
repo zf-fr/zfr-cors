@@ -19,8 +19,8 @@
 return array(
     'service_manager' => array(
         'factories' => array(
-            'ZfrCors\Options\CorsOptions' => 'ZfrCors\Factory\CorsOptionsFactory',
             'ZfrCors\Mvc\CorsListener'    => 'ZfrCors\Factory\CorsListenerFactory',
+            'ZfrCors\Options\CorsOptions' => 'ZfrCors\Factory\CorsOptionsFactory',
             'ZfrCors\Service\CorsService' => 'ZfrCors\Factory\CorsServiceFactory',
         ),
     ),

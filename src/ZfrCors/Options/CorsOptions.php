@@ -36,7 +36,7 @@ class CorsOptions extends AbstractOptions
     protected $origins = array();
 
     /**
-     * Set the list of rest method verbs.
+     * Set the list of HTTP verbs.
      *
      * @var array
      */

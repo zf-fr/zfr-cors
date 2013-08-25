@@ -43,35 +43,59 @@ class CorsService
         $this->options = $options;
     }
 
+    /**
+     * @param HttpRequest $request
+     * @return bool
+     */
     public function isCorsRequest(HttpRequest $request)
     {
         return $request->getHeaders()->has('Origin');
     }
 
-    public function isAllowedOrigin(HttpRequest $request)
+    /**
+     * @param HttpRequest $request
+     * @return bool
+     */
+    public function isOriginAllowed(HttpRequest $request)
     {
         return $this->isCorsRequest($request)
-        && in_array($request->getHeader('Origin', null)->getFieldValue(), $this->options->getOrigins());
+            && in_array($request->getHeader('Origin')->getFieldValue(), $this->options->getOrigins());
     }
 
+    /**
+     * @param HttpRequest $request
+     * @return bool
+     */
     public function isPreflightRequest(HttpRequest $request)
     {
         return $request->getMethod() === 'OPTIONS'
             && $request->getHeaders()->has('Access-Control-Request-Method');
     }
 
+    /**
+     * @param HttpRequest $request
+     * @param HttpResponse $response
+     * @return HttpResponse
+     */
     public function prePopulateCorsResponse(HttpRequest $request, HttpResponse $response)
     {
-        if ($this->isAllowedOrigin($request)) {
+        if ($this->isOriginAllowed($request)) {
             $response->getHeaders()->addHeaderLine(
                 'Access-Control-Allow-Origin',
-                $request->getHeader('Origin', null)->getFieldValue()
+                $request->getHeader('Origin')->getFieldValue()
             );
         } else {
+            $response = new HttpResponse();
             $response->setStatusCode(403);
         }
+
+        return $response;
     }
 
+    /**
+     * @param HttpResponse $response
+     * @return HttpResponse
+     */
     public function populateCorsResponse(HttpResponse $response)
     {
         $response->setStatusCode(204);
@@ -83,5 +107,7 @@ class CorsService
         if ($this->options->getAllowedCredentials()) {
             $headers->addHeaderLine('Access-Control-Allow-Credentials', $this->options->getAllowedCredentials());
         }
+
+        return $response;
     }
 }

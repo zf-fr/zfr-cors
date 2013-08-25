@@ -13,7 +13,7 @@ return array(
          // 'origins' => array('http://exemple.com'),
 
          /**
-          * Set the list of rest method verbs.
+          * Set the list of HTTP verbs.
           */
          // 'allowed_methods' => array('GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'),
 

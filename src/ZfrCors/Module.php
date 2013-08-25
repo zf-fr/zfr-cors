@@ -24,6 +24,7 @@ use Zend\ModuleManager\Feature\ConfigProviderInterface;
 
 /**
  * @licence MIT
+ * @author  Florent Blaison <florent.blaison@gmail.com>
  */
 class Module implements
     BootstrapListenerInterface,
