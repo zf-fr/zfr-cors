@@ -16,4 +16,14 @@
  * and is licensed under the MIT license.
  */
 
-return array();
+return array(
+    'service_manager' => array(
+        'factories' => array(
+            'ZfrCors\Options\CorsOptions' => 'ZfrCors\Factory\CorsOptionsFactory',
+            'ZfrCors\Mvc\CorsListener'    => 'ZfrCors\Factory\CorsListenerFactory',
+            'ZfrCors\Service\CorsService' => 'ZfrCors\Factory\CorsServiceFactory',
+        ),
+    ),
+
+    'zfr_cors' => array(),
+);

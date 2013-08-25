@@ -16,38 +16,27 @@
  * and is licensed under the MIT license.
  */
 
-namespace ZfrCors;
+namespace ZfrCors\Factory;
 
-use Zend\EventManager\EventInterface;
-use Zend\ModuleManager\Feature\BootstrapListenerInterface;
-use Zend\ModuleManager\Feature\ConfigProviderInterface;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use ZfrCors\Options\CorsOptions;
 
 /**
- * @licence MIT
+ * CorsOptionsFactory
+ *
+ * @license MIT
+ * @author  Florent Blaison <florent.blaison@gmail.com>
  */
-class Module implements
-    BootstrapListenerInterface,
-    ConfigProviderInterface
+class CorsOptionsFactory implements FactoryInterface
 {
-
     /**
      * {@inheritDoc}
      */
-    public function onBootstrap(EventInterface $event)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        /* @var $application \Zend\Mvc\Application */
-        $application     = $event->getTarget();
-        $serviceManager  = $application->getServiceManager();
-        $eventManager    = $application->getEventManager();
+        $config = $serviceLocator->get('Config');
 
-        $eventManager->attach($serviceManager->get('ZfrCors\Mvc\CorsListener'));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getConfig()
-    {
-        return include __DIR__ . '/../../config/module.config.php';
+        return new CorsOptions($config['zfr_cors']);
     }
 }
