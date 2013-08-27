@@ -29,7 +29,7 @@ use Zend\Stdlib\AbstractOptions;
 class CorsOptions extends AbstractOptions
 {
     /**
-     * Set the list of allowed origins domain.
+     * Set the list of allowed origins domain with protocol.
      *
      * @var array
      */

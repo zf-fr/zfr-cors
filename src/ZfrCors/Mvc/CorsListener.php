@@ -52,7 +52,7 @@ class CorsListener extends AbstractListenerAggregate
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(MvcEvent::EVENT_ROUTE, array($this, 'onCors'), 1000);
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_ROUTE, array($this, 'onCors'), -10);
     }
 
     /**
@@ -68,12 +68,14 @@ class CorsListener extends AbstractListenerAggregate
         /** @var $response HttpResponse */
         $response = $event->getResponse();
 
+        //try {
         $response = $this->corsService->prePopulateCorsResponse($request, $response);
+        /*} catch (DisallowedOriginException $e) {
+            $response->setStatusCode(403);
+        }*/
 
         if ($this->corsService->isPreflightRequest($request)) {
             $response = $this->corsService->populateCorsResponse($response);
-
-            $event->setResult($response);
 
             return $response;
         }

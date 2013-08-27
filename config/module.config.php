@@ -19,7 +19,7 @@
 return array(
     'service_manager' => array(
         'invokables' => array(
-            'ZfrCors\Mvc\ExceptionListener' => 'ZfrCors\Mvc\ExceptionListener',
+            'ZfrCors\Mvc\DisallowedOriginListener' => 'ZfrCors\Mvc\DisallowedOriginListener',
         ),
 
         'factories' => array(

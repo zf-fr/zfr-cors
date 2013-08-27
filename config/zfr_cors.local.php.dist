@@ -8,7 +8,7 @@
 return array(
     'zfr_cors' => array(
          /**
-          * Set the list of allowed origins domain.
+          * Set the list of allowed origins domain with protocol.
           */
          // 'origins' => array('http://exemple.com'),
 

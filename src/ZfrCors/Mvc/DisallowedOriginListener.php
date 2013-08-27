@@ -24,23 +24,21 @@ use Zend\Http\Response as HttpResponse;
 use Zend\Http\Request as HttpRequest;
 use Zend\Mvc\MvcEvent;
 use ZfrCors\Exception\DisallowedOriginException;
-use ZfrCors\Service\CorsService;
-use ZfrRest\Http\Exception\AbstractHttpException;
 
 /**
- * ExceptionListener
+ * DisallowedOriginListener
  *
  * @license MIT
  * @author  Florent Blaison <florent.blaison@gmail.com>
  */
-class ExceptionListener extends AbstractListenerAggregate
+class DisallowedOriginListener extends AbstractListenerAggregate
 {
     /**
      * {@inheritDoc}
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach('application.error', array($this, 'onDisallowedOriginException'), 1000);
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_DISPATCH_ERROR, array($this, 'onDisallowedOriginException'), 1000);
     }
 
     /**
@@ -60,8 +58,10 @@ class ExceptionListener extends AbstractListenerAggregate
             return;
         }
 
+        $response = new HttpResponse();
         $response->setStatusCode(403);
 
+        $event->setResponse($response);
         $event->setResult($response);
     }
 }

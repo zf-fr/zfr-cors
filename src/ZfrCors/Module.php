@@ -41,7 +41,7 @@ class Module implements
         $serviceManager  = $application->getServiceManager();
         $eventManager    = $application->getEventManager();
 
-        $eventManager->attach($serviceManager->get('ZfrCors\Mvc\ExceptionListener'));
+        $eventManager->attach($serviceManager->get('ZfrCors\Mvc\DisallowedOriginListener'));
         $eventManager->attach($serviceManager->get('ZfrCors\Mvc\CorsListener'));
     }
 
