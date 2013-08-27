@@ -13,38 +13,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license.
+ * and is licensed under the MIT license. For more information, see
+ * <http://www.doctrine-project.org>.
  */
 
-use ZfrCorsTest\Util\ModuleLoaderFactory;
+namespace ZfrCorsTest\Util;
 
-ini_set('error_reporting', E_ALL);
+use Zend\ServiceManager\ServiceManager;
+use Zend\Test\Util\ModuleLoader;
 
-$files = array(__DIR__ . '/../vendor/autoload.php', __DIR__ . '/../../../autoload.php');
+/**
+ * Utility used to retrieve a freshly initialized module loader
+ *
+ * @license MIT
+ * @author  Marco Pivetta <ocramius@gmail.com>
+ */
+class ModuleLoaderFactory
+{
+    /**
+     * @var array
+     */
+    private static $config = array();
 
-foreach ($files as $file) {
-    if (file_exists($file)) {
-        $loader = require $file;
+    /**
+     * @param array $config
+     */
+    public static function setConfig(array $config)
+    {
+        static::$config = $config;
+    }
 
-        break;
+    /**
+     * Builds a new module loader
+     *
+     * @param array $config
+     *
+     * @return ModuleLoader
+     */
+    public static function createModuleLoader(array $config = null)
+    {
+        return new ModuleLoader(isset($config) ? $config : static::$config);
     }
 }
-
-if (! isset($loader)) {
-    throw new RuntimeException('vendor/autoload.php could not be found. Did you install via composer?');
-}
-
-$loader->add('ZfrCorsTest\\', __DIR__);
-
-$configFiles = array(__DIR__ . '/TestConfiguration.php', __DIR__ . '/TestConfiguration.php.dist');
-
-foreach ($configFiles as $configFile) {
-    if (file_exists($configFile)) {
-        $config = require $configFile;
-
-        break;
-    }
-}
-
-ModuleLoaderFactory::setConfig($config);
-unset($files, $file, $loader, $configFiles, $configFile, $config);
