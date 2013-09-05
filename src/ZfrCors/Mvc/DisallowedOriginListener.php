@@ -60,6 +60,7 @@ class DisallowedOriginListener extends AbstractListenerAggregate
 
         $response = new HttpResponse();
         $response->setStatusCode(403);
+        $response->setContent($exception->getMessage());
 
         $event->setResponse($response);
         $event->setResult($response);

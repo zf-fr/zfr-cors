@@ -87,7 +87,7 @@ class CorsService
                 $request->getHeader('Origin')->getFieldValue()
             );
         } else {
-            throw new DisallowedOriginException();
+            throw new DisallowedOriginException('You are not allowed');
         }
 
         return $response;

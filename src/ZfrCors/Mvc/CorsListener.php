@@ -68,11 +68,11 @@ class CorsListener extends AbstractListenerAggregate
         /** @var $response HttpResponse */
         $response = $event->getResponse();
 
-        //try {
-        $response = $this->corsService->prePopulateCorsResponse($request, $response);
-        /*} catch (DisallowedOriginException $e) {
-            $response->setStatusCode(403);
-        }*/
+        try{
+            $response = $this->corsService->prePopulateCorsResponse($request, $response);
+        } catch (DisallowedOriginException $e) {
+            $event->stopPropagation();
+        }
 
         if ($this->corsService->isPreflightRequest($request)) {
             $response = $this->corsService->populateCorsResponse($response);
