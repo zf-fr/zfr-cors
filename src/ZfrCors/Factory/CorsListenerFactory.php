@@ -16,18 +16,30 @@
  * and is licensed under the MIT license.
  */
 
-return array(
-    'service_manager' => array(
-        'invokables' => array(
-            'ZfrCors\Mvc\DisallowedOriginListener' => 'ZfrCors\Mvc\DisallowedOriginListener',
-        ),
+namespace ZfrCors\Factory;
 
-        'factories' => array(
-            'ZfrCors\Mvc\CorsListener'    => 'ZfrCors\Factory\CorsListenerFactory',
-            'ZfrCors\Options\CorsOptions' => 'ZfrCors\Factory\CorsOptionsFactory',
-            'ZfrCors\Service\CorsService' => 'ZfrCors\Factory\CorsServiceFactory',
-        ),
-    ),
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use ZfrCors\Mvc\CorsListener;
+use ZfrCors\Service\CorsService;
 
-    'zfr_cors' => array(),
-);
+/**
+ * CorsListenerFactory
+ *
+ * @license MIT
+ * @author  Florent Blaison <florent.blaison@gmail.com>
+ */
+class CorsListenerFactory implements FactoryInterface
+{
+    /**
+     * {@inheritDoc}
+     * @return CorsListener
+     */
+    public function createService(ServiceLocatorInterface $serviceLocator)
+    {
+        /* @var $corsService CorsService */
+        $corsService = $serviceLocator->get('ZfrCors\Service\CorsService');
+
+        return new CorsListener($corsService);
+    }
+}

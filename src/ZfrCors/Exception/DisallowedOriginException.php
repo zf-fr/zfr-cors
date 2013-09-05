@@ -16,18 +16,18 @@
  * and is licensed under the MIT license.
  */
 
-return array(
-    'service_manager' => array(
-        'invokables' => array(
-            'ZfrCors\Mvc\DisallowedOriginListener' => 'ZfrCors\Mvc\DisallowedOriginListener',
-        ),
+namespace ZfrCors\Exception;
 
-        'factories' => array(
-            'ZfrCors\Mvc\CorsListener'    => 'ZfrCors\Factory\CorsListenerFactory',
-            'ZfrCors\Options\CorsOptions' => 'ZfrCors\Factory\CorsOptionsFactory',
-            'ZfrCors\Service\CorsService' => 'ZfrCors\Factory\CorsServiceFactory',
-        ),
-    ),
+use DomainException;
+use ZfrCors\Exception\ExceptionInterface;
 
-    'zfr_cors' => array(),
-);
+/**
+ * DisallowedOriginException
+ *
+ * @license MIT
+ * @author  Florent Blaison <florent.blaison@gmail.com>
+ */
+class DisallowedOriginException extends DomainException implements ExceptionInterface
+{
+
+}

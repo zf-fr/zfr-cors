@@ -16,18 +16,14 @@
  * and is licensed under the MIT license.
  */
 
-return array(
-    'service_manager' => array(
-        'invokables' => array(
-            'ZfrCors\Mvc\DisallowedOriginListener' => 'ZfrCors\Mvc\DisallowedOriginListener',
-        ),
+namespace ZfrCors\Exception;
 
-        'factories' => array(
-            'ZfrCors\Mvc\CorsListener'    => 'ZfrCors\Factory\CorsListenerFactory',
-            'ZfrCors\Options\CorsOptions' => 'ZfrCors\Factory\CorsOptionsFactory',
-            'ZfrCors\Service\CorsService' => 'ZfrCors\Factory\CorsServiceFactory',
-        ),
-    ),
-
-    'zfr_cors' => array(),
-);
+/**
+ * Exception interface for every ZfrCors exceptions
+ *
+ * @license MIT
+ * @author  Florent Blaison <florent.blaison@gmail.com>
+ */
+interface ExceptionInterface
+{
+}
