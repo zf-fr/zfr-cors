@@ -30,7 +30,7 @@ use ZfrCors\Service\CorsService;
  *
  * @author Florent Blaison <florent.blaison@gmail.com>
  *
- * @covers \ZfrRest\Service\CorsService
+ * @covers \ZfrCors\Service\CorsService
  * @group Functional
  */
 class CorsServiceTest extends TestCase
