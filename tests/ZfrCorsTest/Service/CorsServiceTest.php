@@ -26,7 +26,7 @@ use ZfrCors\Options\CorsOptions;
 use ZfrCors\Service\CorsService;
 
 /**
- * Integration tests for {@see \ZfrRest\Service\CorsService}
+ * Integration tests for {@see \ZfrCors\Service\CorsService}
  *
  * @author Florent Blaison <florent.blaison@gmail.com>
  *
@@ -75,11 +75,6 @@ class CorsServiceTest extends TestCase
             'allowed_credentials' => true,
         ));
         $this->corsService = new CorsService($this->corsOptions);
-
-        // Init the MvcEvent object
-        /*$this->response = new HttpResponse();
-        $this->event = new MvcEvent();
-        $this->event->setResponse($this->response);*/
     }
 
     public function testIfIsCorsRequest()
