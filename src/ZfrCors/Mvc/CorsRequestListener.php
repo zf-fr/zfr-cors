@@ -52,7 +52,7 @@ class CorsRequestListener extends AbstractListenerAggregate
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(MvcEvent::EVENT_ROUTE, array($this, 'onCorsRequest'), -10);
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_ROUTE, array($this, 'onCorsRequest'), -1);
     }
 
     /**
