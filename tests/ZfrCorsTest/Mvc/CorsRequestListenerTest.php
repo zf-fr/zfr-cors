@@ -58,6 +58,18 @@ class CorsRequestListenerTest extends TestCase
         $this->corsListener = new CorsRequestListener($this->corsService);
     }
 
+    public function testAttach()
+    {
+        $eventManager = $this->getMock('Zend\EventManager\EventManagerInterface');
+
+        $eventManager
+            ->expects($this->once())
+            ->method('attach')
+            ->with(MvcEvent::EVENT_ROUTE, $this->isType('callable'), $this->lessThan(0));
+
+        $this->corsListener->attach($eventManager);
+    }
+
     public function testReturnNothingForNonCorsRequest()
     {
         $mvcEvent = new MvcEvent();
