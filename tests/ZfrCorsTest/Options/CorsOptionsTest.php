@@ -65,4 +65,12 @@ class CorsOptionsTest extends TestCase
         $options->setAllowedCredentials(true);
         $this->assertTrue($options->getAllowedCredentials());
     }
+
+    public function testNormalizeHttpMethods()
+    {
+        $options = new CorsOptions();
+
+        $options->setAllowedMethods(array('post', 'GeT'));
+        $this->assertEquals(array('POST', 'GET'), $options->getAllowedMethods());
+    }
 }

@@ -93,6 +93,10 @@ class CorsOptions extends AbstractOptions
      */
     public function setAllowedMethods(array $allowedMethods)
     {
+        foreach ($allowedMethods as &$allowedMethod) {
+            $allowedMethod = strtoupper($allowedMethod);
+        }
+
         $this->allowedMethods = $allowedMethods;
     }
 
