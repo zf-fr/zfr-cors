@@ -23,7 +23,6 @@ use Zend\Mvc\Application;
 use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceManager;
 use ZfrCors\Module;
-use ZfrCorsTest\Util\ServiceManagerFactory;
 
 /**
  * Tests for {@see \ZfrCors\Module}
