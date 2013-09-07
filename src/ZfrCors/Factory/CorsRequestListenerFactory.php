@@ -29,7 +29,7 @@ use ZfrCors\Service\CorsService;
  * @license MIT
  * @author  Florent Blaison <florent.blaison@gmail.com>
  */
-class CorsListenerFactory implements FactoryInterface
+class CorsRequestListenerFactory implements FactoryInterface
 {
     /**
      * {@inheritDoc}

@@ -13,45 +13,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
+ * and is licensed under the MIT license.
  */
 
-namespace ZfrCorsTest\Util;
+namespace ZfrCorsTest\Factory;
 
+use PHPUnit_Framework_TestCase as TestCase;
 use Zend\ServiceManager\ServiceManager;
-use Zend\Test\Util\ModuleLoader;
+use ZfrCorsTest\Util\ServiceManagerFactory;
 
 /**
- * Utility used to retrieve a freshly initialized module loader
+ * Integration tests for {@see \ZfrCors\Service\CorsService}
  *
- * @license MIT
- * @author  Marco Pivetta <ocramius@gmail.com>
+ * @author Michaël Gallego <mic.gallego@gmail.com>
+ *
+ * @covers \ZfrCors\Factory\CorsServiceFactory
+ * @group Functional
  */
-class ModuleLoaderFactory
+class CorsServiceFactoryTest extends TestCase
 {
-    /**
-     * @var array
-     */
-    private static $config = array();
-
-    /**
-     * @param array $config
-     */
-    public static function setConfig(array $config)
+    public function testCanCreateCorsService()
     {
-        static::$config = $config;
-    }
+        $serviceManager = ServiceManagerFactory::getServiceManager();
+        $service        = $serviceManager->get('ZfrCors\Service\CorsService');
 
-    /**
-     * Builds a new module loader
-     *
-     * @param array $config
-     *
-     * @return ModuleLoader
-     */
-    public static function createModuleLoader(array $config = null)
-    {
-        return new ModuleLoader(isset($config) ? $config : static::$config);
+        $this->assertInstanceOf('ZfrCors\Service\CorsService', $service);
     }
 }

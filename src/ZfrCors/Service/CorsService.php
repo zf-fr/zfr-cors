@@ -70,17 +70,6 @@ class CorsService
     }
 
     /**
-     * Check if the method is allowed
-     *
-     * @param  HttpRequest $request
-     * @return bool
-     */
-    public function isMethodAllowed(HttpRequest $request)
-    {
-        return in_array(strtoupper($request->getMethod()), $this->options->getAllowedMethods());
-    }
-
-    /**
      * Populate a preflight response by adding the corresponding headers
      *
      * @param  HttpRequest  $request
@@ -95,13 +84,14 @@ class CorsService
         $headers = $response->getHeaders();
 
         $headers->addHeaderLine('Access-Control-Allow-Origin', $this->getAllowedOriginValue($request));
-        $headers->addHeaderLine('Access-Control-Allow-Methods', implode(',', $this->options->getAllowedMethods()));
-        $headers->addHeaderLine('Access-Control-Allow-Headers', implode(',', $this->options->getAllowedHeaders()));
+        $headers->addHeaderLine('Access-Control-Allow-Methods', implode(', ', $this->options->getAllowedMethods()));
+        $headers->addHeaderLine('Access-Control-Allow-Headers', implode(', ', $this->options->getAllowedHeaders()));
         $headers->addHeaderLine('Access-Control-Max-Age', $this->options->getMaxAge());
         $headers->addHeaderLine('Content-Length', 0);
 
         if ($this->options->getAllowedCredentials()) {
-            $headers->addHeaderLine('Access-Control-Allow-Credentials', $this->options->getAllowedCredentials());
+            $value = $this->options->getAllowedCredentials() ? 'true' : 'false';
+            $headers->addHeaderLine('Access-Control-Allow-Credentials', $value);
         }
 
         return $response;
@@ -118,7 +108,7 @@ class CorsService
     {
         $headers = $response->getHeaders();
         $headers->addHeaderLine('Access-Control-Allow-Origin', $this->getAllowedOriginValue($request));
-        $headers->addHeaderLine('Access-Control-Expose-Headers', $this->options->getExposedHeaders());
+        $headers->addHeaderLine('Access-Control-Expose-Headers', implode(', ', $this->options->getExposedHeaders()));
 
         return $response;
     }

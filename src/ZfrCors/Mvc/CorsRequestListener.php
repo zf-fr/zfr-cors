@@ -23,8 +23,6 @@ use Zend\EventManager\EventManagerInterface;
 use Zend\Http\Response as HttpResponse;
 use Zend\Http\Request as HttpRequest;
 use Zend\Mvc\MvcEvent;
-use ZfrCors\Exception\DisallowedMethodException;
-use ZfrCors\Exception\DisallowedOriginException;
 use ZfrCors\Service\CorsService;
 
 /**
@@ -60,7 +58,6 @@ class CorsRequestListener extends AbstractListenerAggregate
      * Handle a CORS request (either preflight or normal CORS request)
      *
      * @param  MvcEvent $event
-     * @throws DisallowedOriginException
      * @return mixed
      */
     public function onCorsRequest(MvcEvent $event)

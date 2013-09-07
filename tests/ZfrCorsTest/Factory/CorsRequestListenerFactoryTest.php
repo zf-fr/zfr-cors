@@ -15,15 +15,28 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
  */
-return array(
-    'modules' => array(
-        'ZfrCors',
-    ),
-    'module_listener_options' => array(
-        'config_glob_paths' => array(
-            __DIR__ . '/testing.config.php',
-        ),
-        'module_paths' => array(
-        ),
-    ),
-);
+
+namespace ZfrCorsTest\Factory;
+
+use PHPUnit_Framework_TestCase as TestCase;
+use Zend\ServiceManager\ServiceManager;
+use ZfrCorsTest\Util\ServiceManagerFactory;
+
+/**
+ * Integration tests for {@see \ZfrCors\Service\CorsService}
+ *
+ * @author Michaël Gallego <mic.gallego@gmail.com>
+ *
+ * @covers \ZfrCors\Factory\CorsRequestListenerFactory
+ * @group Functional
+ */
+class CorsRequestListenerFactoryTest extends TestCase
+{
+    public function testCanCreateCorsRequestListener()
+    {
+        $serviceManager = ServiceManagerFactory::getServiceManager();
+        $listener       = $serviceManager->get('ZfrCors\Mvc\CorsRequestListener');
+
+        $this->assertInstanceOf('ZfrCors\Mvc\CorsRequestListener', $listener);
+    }
+}
