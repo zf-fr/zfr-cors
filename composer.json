@@ -13,19 +13,21 @@
     "homepage": "https://github.com/zf-fr/zfr-cors",
     "authors": [
         {
+            "name": "Florent Blaison",
+            "email": "florent.blaison@gmail.com"
+        },
+        {
             "name": "Michaël Gallego",
             "email": "mic.gallego@gmail.com",
             "homepage": "http://www.michaelgallego.fr/"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
         "php": ">=5.3.3",
         "zendframework/zend-eventmanager": "~2.2",
         "zendframework/zend-http": "~2.2",
         "zendframework/zend-mvc": "~2.2",
-        "zendframework/zend-servicemanager": "~2.2",
-        "zendframework/zend-modulemanager": "~2.2"
+        "zendframework/zend-servicemanager": "~2.2"
     },
     "require-dev": {
         "zendframework/zendframework": "~2.2",
