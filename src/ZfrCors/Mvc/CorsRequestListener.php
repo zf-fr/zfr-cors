@@ -83,6 +83,8 @@ class CorsRequestListener extends AbstractListenerAggregate
             $response = $this->corsService->populateCorsResponse($request, $response);
             $event->setResponse($response);
         } catch (DisallowedOriginException $exception) {
+            $response = new HttpResponse(); // Clear response for security
+
             $response->setStatusCode(403)
                      ->setReasonPhrase($exception->getMessage());
 
