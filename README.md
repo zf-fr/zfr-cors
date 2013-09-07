@@ -42,3 +42,19 @@ the `zfr_cors.global.php.dist` file to your `autoload` folder (don't forget to r
 and configure it to suit your needs.
 
 This file has a basic documentation for most options.
+
+### Security concerns
+
+When using CORS requests, you have to distinguish two situations:
+
+* Simple requests (GET, POST) with no custom header: a CORS request is directly made to your server. ZfrCors
+will automatically check if the value inside the "Origin" header is allowed by your config. If this is the
+case, ZfrRest will set the appropriate response answers, and let your application populate the response
+normally. Otherwise, ZfrCors will automatically return a response with a 403 (Unauthorized) status code.
+* Complex requests (PUT, DELETE...): your browser will first make a so-called "preflight" request. This is
+a simple OPTIONS request that ask your server the permission to make the request. ZfrRest will automatically
+create a preflight response and directly returns. Based on this answer, the browser will decide if it has
+authorization to perform the real request.
+
+However, please don't use this module for securing your API. You still MUST have a solid security layer in
+your application!

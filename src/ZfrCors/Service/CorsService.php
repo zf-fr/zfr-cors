@@ -18,6 +18,7 @@
 
 namespace ZfrCors\Service;
 
+use ZfrCors\Exception\DisallowedOriginException;
 use ZfrCors\Options\CorsOptions;
 use Zend\Http\Request as HttpRequest;
 use Zend\Http\Response as HttpResponse;
@@ -79,7 +80,7 @@ class CorsService
     public function populatePreflightCorsResponse(HttpRequest $request, HttpResponse $response)
     {
         $response->setStatusCode(200);
-        $response->setContent(''); // Preflight answer should not have body
+        $response->setContent(''); // Preflight response should have empty body
 
         $headers = $response->getHeaders();
 
@@ -99,14 +100,27 @@ class CorsService
     /**
      * Populate a simple CORS response
      *
-     * @param  HttpRequest  $request
+     * @param  HttpRequest $request
      * @param  HttpResponse $response
      * @return HttpResponse
+     * @throws DisallowedOriginException If the origin is not allowed
      */
     public function populateCorsResponse(HttpRequest $request, HttpResponse $response)
     {
+        $origin = $this->getAllowedOriginValue($request);
+
+        // If $origin is "null", then it means than the origin is not allowed. As this is
+        // a simple request, it is useless to continue the processing as it will be refused
+        // by the browser anyway, so we throw an exception
+        if ($origin === 'null') {
+            throw new DisallowedOriginException(sprintf(
+                'The origin "%s" is not authorized',
+                $request->getHeader('Origin')->getFieldValue()
+            ));
+        }
+
         $headers = $response->getHeaders();
-        $headers->addHeaderLine('Access-Control-Allow-Origin', $this->getAllowedOriginValue($request));
+        $headers->addHeaderLine('Access-Control-Allow-Origin', $origin);
         $headers->addHeaderLine('Access-Control-Expose-Headers', implode(', ', $this->options->getExposedHeaders()));
 
         return $response;

@@ -42,13 +42,19 @@ class CorsRequestListenerTest extends TestCase
     protected $corsService;
 
     /**
+     * @var CorsOptions
+     */
+    protected $corsOptions;
+
+    /**
      * @var CorsRequestListener
      */
     protected $corsListener;
 
     public function setUp()
     {
-        $this->corsService  = new CorsService(new CorsOptions(array()));
+        $this->corsOptions  = new CorsOptions();
+        $this->corsService  = new CorsService($this->corsOptions);
         $this->corsListener = new CorsRequestListener($this->corsService);
     }
 
@@ -80,7 +86,7 @@ class CorsRequestListenerTest extends TestCase
         $this->assertEquals($response, $this->corsListener->onCorsRequest($mvcEvent));
     }
 
-    public function testReturnNothingForNormalCorsRequest()
+    public function testReturnNothingForNormalAuthorizedCorsRequest()
     {
         $mvcEvent = new MvcEvent();
         $request  = new HttpRequest();
@@ -88,9 +94,26 @@ class CorsRequestListenerTest extends TestCase
 
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
 
+        $this->corsOptions->setAllowedOrigins(array('http://example.com'));
+
         $mvcEvent->setRequest($request)
                  ->setResponse($response);
 
         $this->assertNull($this->corsListener->onCorsRequest($mvcEvent));
+    }
+
+    public function testReturnUnauthorizedResponseForNormalUnauthorizedCorsRequest()
+    {
+        $mvcEvent = new MvcEvent();
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://unauthorized-domain.com');
+
+        $mvcEvent->setRequest($request)
+                 ->setResponse($response);
+
+        $this->assertEquals($response, $this->corsListener->onCorsRequest($mvcEvent));
+        $this->assertEquals(403, $response->getStatusCode());
     }
 }

@@ -195,4 +195,19 @@ class CorsServiceTest extends TestCase
         $this->assertEquals('http://example.com', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
         $this->assertEquals('Location', $headers->get('Access-Control-Expose-Headers')->getFieldValue());
     }
+
+    public function testRefuseNormalCorsRequestIfUnauthorized()
+    {
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://unauthorized.com');
+
+        $this->setExpectedException(
+            'ZfrCors\Exception\DisallowedOriginException',
+            'The origin "http://unauthorized.com" is not authorized'
+        );
+
+        $this->corsService->populateCorsResponse($request, $response);
+    }
 }
