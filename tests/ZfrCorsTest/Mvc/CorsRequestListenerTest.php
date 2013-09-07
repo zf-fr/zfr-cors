@@ -64,7 +64,7 @@ class CorsRequestListenerTest extends TestCase
         $this->assertNull($this->corsListener->onCorsRequest($mvcEvent));
     }
 
-    public function testReturnResponseForPreflightCorsRequest()
+    public function testImmediatelyReturnResponseForPreflightCorsRequest()
     {
         $mvcEvent = new MvcEvent();
         $request  = new HttpRequest();
@@ -80,7 +80,7 @@ class CorsRequestListenerTest extends TestCase
         $this->assertEquals($response, $this->corsListener->onCorsRequest($mvcEvent));
     }
 
-    public function testReturnResponseForNormalCorsRequest()
+    public function testReturnNothingForNormalCorsRequest()
     {
         $mvcEvent = new MvcEvent();
         $request  = new HttpRequest();
@@ -91,6 +91,6 @@ class CorsRequestListenerTest extends TestCase
         $mvcEvent->setRequest($request)
                  ->setResponse($response);
 
-        $this->assertEquals($response, $this->corsListener->onCorsRequest($mvcEvent));
+        $this->assertNull($this->corsListener->onCorsRequest($mvcEvent));
     }
 }
