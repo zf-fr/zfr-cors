@@ -39,6 +39,7 @@ class CorsServiceFactory implements FactoryInterface
     {
         /* @var $corsOptions CorsOptions */
         $corsOptions = $serviceLocator->get('ZfrCors\Options\CorsOptions');
+
         return new CorsService($corsOptions);
     }
 }

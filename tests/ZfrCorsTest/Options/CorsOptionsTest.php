@@ -27,7 +27,7 @@ use ZfrCors\Options\CorsOptions;
  * @author Michaël Gallego <mic.gallego@gmail.com>
  *
  * @covers \ZfrCors\Options\CorsOptions
- * @group Functional
+ * @group Coverage
  */
 class CorsOptionsTest extends TestCase
 {

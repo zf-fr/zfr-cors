@@ -23,13 +23,14 @@ use Zend\Mvc\Application;
 use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceManager;
 use ZfrCors\Module;
-use ZfrCorsTest\Util\ServiceManagerFactory;
 
 /**
  * Tests for {@see \ZfrCors\Module}
  *
  * @license MIT
  * @author  Marco Pivetta <ocramius@gmail.com>
+ *
+ * @group Coverage
  */
 class ModuleTest extends PHPUnit_Framework_TestCase
 {
@@ -49,18 +50,24 @@ class ModuleTest extends PHPUnit_Framework_TestCase
      */
     public function testAssertListenerIsCorrectlyRegistered()
     {
-        $this->markTestIncomplete('To be done');
+        $module         = new Module();
+        $mvcEvent       = $this->getMock('Zend\Mvc\MvcEvent');
+        $application    = $this->getMock('Zend\Mvc\Application', array(), array(), '', false);
+        $eventManager   = $this->getMock('Zend\EventManager\EventManagerInterface');
+        $serviceManager = $this->getMock('Zend\ServiceManager\ServiceManager');
+        $corsListener   = $this->getMock('ZfrCors\Mvc\CorsRequestListener', array(), array(), '', false);
 
-        /*$module = new Module();
+        $mvcEvent->expects($this->any())->method('getTarget')->will($this->returnValue($application));
+        $application->expects($this->any())->method('getEventManager')->will($this->returnValue($eventManager));
+        $application->expects($this->any())->method('getServiceManager')->will($this->returnValue($serviceManager));
+        $serviceManager
+            ->expects($this->any())
+            ->method('get')
+            ->with('ZfrCors\Mvc\CorsRequestListener')
+            ->will($this->returnValue($corsListener));
 
-        $serviceManager = ServiceManagerFactory::getServiceManager();
+        $eventManager->expects($this->once())->method('attach')->with($corsListener);
 
-        $application = new Application(array(), $serviceManager);
-        $event       = new MvcEvent();
-        $event->setTarget($application);
-
-        $module->onBootstrap($event);
-
-        $eventManager = $serviceManager->get('EventManager');*/
+        $module->onBootstrap($mvcEvent);
     }
 }

@@ -28,7 +28,7 @@ use ZfrCorsTest\Util\ServiceManagerFactory;
  * @author Michaël Gallego <mic.gallego@gmail.com>
  *
  * @covers \ZfrCors\Factory\CorsServiceFactory
- * @group Functional
+ * @group Coverage
  */
 class CorsServiceFactoryTest extends TestCase
 {
