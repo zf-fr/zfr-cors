@@ -90,8 +90,7 @@ class CorsService
         $headers->addHeaderLine('Content-Length', 0);
 
         if ($this->options->getAllowedCredentials()) {
-            $value = $this->options->getAllowedCredentials() ? 'true' : 'false';
-            $headers->addHeaderLine('Access-Control-Allow-Credentials', $value);
+            $headers->addHeaderLine('Access-Control-Allow-Credentials', 'true');
         }
 
         return $response;
