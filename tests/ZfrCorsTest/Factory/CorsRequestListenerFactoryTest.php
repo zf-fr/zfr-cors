@@ -16,30 +16,27 @@
  * and is licensed under the MIT license.
  */
 
-namespace ZfrCors\Factory;
+namespace ZfrCorsTest\Factory;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use ZfrCors\Mvc\CorsListener;
-use ZfrCors\Service\CorsService;
+use PHPUnit_Framework_TestCase as TestCase;
+use Zend\ServiceManager\ServiceManager;
+use ZfrCorsTest\Util\ServiceManagerFactory;
 
 /**
- * CorsListenerFactory
+ * Integration tests for {@see \ZfrCors\Service\CorsService}
  *
- * @license MIT
- * @author  Florent Blaison <florent.blaison@gmail.com>
+ * @author Michaël Gallego <mic.gallego@gmail.com>
+ *
+ * @covers \ZfrCors\Factory\CorsRequestListenerFactory
+ * @group Functional
  */
-class CorsListenerFactory implements FactoryInterface
+class CorsRequestListenerFactoryTest extends TestCase
 {
-    /**
-     * {@inheritDoc}
-     * @return CorsListener
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function testCanCreateCorsRequestListener()
     {
-        /* @var $corsService CorsService */
-        $corsService = $serviceLocator->get('ZfrCors\Service\CorsService');
+        $serviceManager = ServiceManagerFactory::getServiceManager();
+        $listener       = $serviceManager->get('ZfrCors\Mvc\CorsRequestListener');
 
-        return new CorsListener($corsService);
+        $this->assertInstanceOf('ZfrCors\Mvc\CorsRequestListener', $listener);
     }
 }

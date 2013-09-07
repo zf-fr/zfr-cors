@@ -68,124 +68,131 @@ class CorsServiceTest extends TestCase
         parent::setUp();
 
         $this->corsOptions = new CorsOptions(array(
-            'origins' => array('origin-header'),
-            'allowed_methods' => array('GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'),
-            'allowed_headers' => array('content-type', 'accept'),
-            'max_age' => 10,
+            'allowed_origins'     => array('http://example.com'),
+            'allowed_methods'     => array('GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'),
+            'allowed_headers'     => array('Content-Type', 'Accept'),
+            'exposed_headers'     => array('Location'),
+            'max_age'             => 10,
             'allowed_credentials' => true,
         ));
+
         $this->corsService = new CorsService($this->corsOptions);
     }
 
-    public function testIfIsCorsRequest()
-    {
-        $request = new HttpRequest();
-        $request->getHeaders()->addHeaderLine('Origin', 'origin-header');
-
-        $result = $this->corsService->isCorsRequest($request);
-
-        $this->assertEquals(true, $result);
-    }
-
-    public function testIfIsNotCorsRequest()
+    public function testCanDetectCorsRequest()
     {
         $request = new HttpRequest();
 
-        $result = $this->corsService->isCorsRequest($request);
+        $this->assertFalse($this->corsService->isCorsRequest($request));
 
-        $this->assertEquals(false, $result);
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+        $this->assertEquals(true, $this->corsService->isCorsRequest($request));
     }
 
-    public function testIfOriginIsAllowed()
+    public function testCanDetectPreflightRequest()
     {
         $request = new HttpRequest();
-        $request->getHeaders()->addHeaderLine('Origin', 'origin-header');
 
-        $result = $this->corsService->isOriginAllowed($request);
+        $this->assertFalse($this->corsService->isPreflightRequest($request));
 
-        $this->assertEquals(true, $result);
+        $request->setMethod('OPTIONS');
+        $this->assertFalse($this->corsService->isPreflightRequest($request));
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+        $this->assertFalse($this->corsService->isPreflightRequest($request));
+
+        $request->getHeaders()->addHeaderLine('Access-Control-Request-Method', 'POST');
+        $this->assertTrue($this->corsService->isPreflightRequest($request));
     }
 
-    public function testIfOriginIsNotAllowed()
+    public function testResponseBodyIsClearedWhenResponseIsPreflighted()
     {
         $request = new HttpRequest();
-        $request->getHeaders()->addHeaderLine('Origin', 'origin-no-header');
+        $request->getHeaders()->addHeaderLine('Origin', 'foo');
 
-        $result = $this->corsService->isOriginAllowed($request);
+        $response = new HttpResponse();
+        $response->setContent('foo');
 
-        $this->assertEquals(false, $result);
+        $this->corsService->populatePreflightCorsResponse($request, $response);
+
+        $this->assertEmpty($response->getContent());
     }
 
-    public function testIfIsPreflightRequest()
-    {
-        $request = new HttpRequest();
-        $request->setMethod('options');
-        $request->getHeaders()->addHeaderLine('Access-Control-Request-Method', 'method');
-
-        $result = $this->corsService->isPreflightRequest($request);
-
-        $this->assertEquals(true, $result);
-    }
-
-    public function testIfIsPreflightRequestWithoutOptions()
-    {
-        $request = new HttpRequest();
-        $request->getHeaders()->addHeaderLine('Access-Control-Request-Method', 'method');
-
-        $result = $this->corsService->isPreflightRequest($request);
-
-        $this->assertEquals(false, $result);
-    }
-
-    public function testIfIsPreflightRequestWithoutACRM()
-    {
-        $request = new HttpRequest();
-        $request->setMethod('options');
-
-        $result = $this->corsService->isPreflightRequest($request);
-
-        $this->assertEquals(false, $result);
-    }
-
-    public function testPrePopulateCorsResponse()
+    public function testProperlyPopulatePreflightRequest()
     {
         $request  = new HttpRequest();
         $response = new HttpResponse();
-        $request->getHeaders()->addHeaderLine('Origin', 'origin-header');
 
-        $this->corsService->prePopulateCorsResponse($request, $response);
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
 
-        $this->assertEquals(true, $response->getHeaders()->has('Access-Control-Allow-Origin'));
-    }
-
-    public function testPrePopulateCorsResponseWithoutOrigin()
-    {
-        $this->setExpectedException('ZfrCors\Exception\DisallowedOriginException');
-
-        $request  = new HttpRequest();
-        $response = new HttpResponse();
-        $request->getHeaders()->addHeaderLine('Origin', 'origin-no-header');
-
-        $this->corsService->prePopulateCorsResponse($request, $response);
-    }
-
-    public function testPopulateCorsResponse()
-    {
-        $response = new HttpResponse();
-        $response = $this->corsService->populateCorsResponse($response);
-
-        $this->assertEquals(204, $response->getStatusCode());
+        $this->corsService->populatePreflightCorsResponse($request, $response);
 
         $headers = $response->getHeaders();
 
-        $this->assertEquals('GET,POST,PUT,DELETE,OPTIONS', $headers->get('Access-Control-Allow-Methods')->getFieldValue());
-
-        $this->assertEquals('content-type,accept', $headers->get('Access-Control-Allow-Headers')->getFieldValue());
-
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('', $response->getContent());
+        $this->assertEquals('http://example.com', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+        $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $headers->get('Access-Control-Allow-Methods')->getFieldValue());
+        $this->assertEquals('Content-Type, Accept', $headers->get('Access-Control-Allow-Headers')->getFieldValue());
         $this->assertEquals(10, $headers->get('Access-Control-Max-Age')->getFieldValue());
-
         $this->assertEquals(0, $headers->get('Content-Length')->getFieldValue());
 
-        $this->assertEquals(true, $headers->get('Access-Control-Allow-Credentials')->getFieldValue());
+        $this->assertEquals('true', $headers->get('Access-Control-Allow-Credentials')->getFieldValue());
+    }
+
+    public function testDoesNotAddAllowCredentialsHeadersIfAsked()
+    {
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+        $this->corsOptions->setAllowedCredentials(false);
+
+        $this->corsService->populatePreflightCorsResponse($request, $response);
+
+        $headers = $response->getHeaders();
+        $this->assertFalse($headers->has('Access-Control-Allow-Credentials'));
+    }
+
+    public function testCanReturnWildCardAllowOrigin()
+    {
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://funny-origin.com');
+        $this->corsOptions->setAllowedOrigins(array('*'));
+
+        $this->corsService->populatePreflightCorsResponse($request, $response);
+
+        $headers = $response->getHeaders();
+        $this->assertEquals('*', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+    }
+
+    public function testReturnNullForUnknownOrigin()
+    {
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://unauthorized-origin.com');
+
+        $this->corsService->populatePreflightCorsResponse($request, $response);
+
+        $headers = $response->getHeaders();
+        $this->assertEquals('null', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+    }
+
+    public function testCanPopulateNormalCorsRequest()
+    {
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+
+        $this->corsService->populateCorsResponse($request, $response);
+
+        $headers = $response->getHeaders();
+
+        $this->assertEquals('http://example.com', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+        $this->assertEquals('Location', $headers->get('Access-Control-Expose-Headers')->getFieldValue());
     }
 }

@@ -18,14 +18,10 @@
 
 return array(
     'service_manager' => array(
-        'invokables' => array(
-            'ZfrCors\Mvc\DisallowedOriginListener' => 'ZfrCors\Mvc\DisallowedOriginListener',
-        ),
-
         'factories' => array(
-            'ZfrCors\Mvc\CorsListener'    => 'ZfrCors\Factory\CorsListenerFactory',
-            'ZfrCors\Options\CorsOptions' => 'ZfrCors\Factory\CorsOptionsFactory',
-            'ZfrCors\Service\CorsService' => 'ZfrCors\Factory\CorsServiceFactory',
+            'ZfrCors\Mvc\CorsRequestListener' => 'ZfrCors\Factory\CorsRequestListenerFactory',
+            'ZfrCors\Options\CorsOptions'     => 'ZfrCors\Factory\CorsOptionsFactory',
+            'ZfrCors\Service\CorsService'     => 'ZfrCors\Factory\CorsServiceFactory',
         ),
     ),
 

@@ -17,8 +17,6 @@
  */
 return array(
     'modules' => array(
-        'DoctrineModule',
-        'DoctrineORMModule',
         'ZfrCors',
     ),
     'module_listener_options' => array(

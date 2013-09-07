@@ -33,7 +33,7 @@ class CorsOptions extends AbstractOptions
      *
      * @var array
      */
-    protected $origins = array();
+    protected $allowedOrigins = array();
 
     /**
      * Set the list of HTTP verbs.
@@ -64,27 +64,27 @@ class CorsOptions extends AbstractOptions
     protected $exposedHeaders = array();
 
     /**
-     * Allow cors request with credential.
+     * Allow CORS request with credential.
      *
      * @var bool
      */
     protected $allowedCredentials = false;
 
     /**
-     * @param  array $origins
+     * @param  array $allowedOrigins
      * @return void
      */
-    public function setOrigins(array $origins)
+    public function setAllowedOrigins(array $allowedOrigins)
     {
-        $this->origins = $origins;
+        $this->allowedOrigins = $allowedOrigins;
     }
 
     /**
      * @return array
      */
-    public function getOrigins()
+    public function getAllowedOrigins()
     {
-        return $this->origins;
+        return $this->allowedOrigins;
     }
 
     /**
