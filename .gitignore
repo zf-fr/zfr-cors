@@ -9,5 +9,6 @@ Thumbs.db
 phpunit.xml
 tmp/
 vendor/
+build/
 composer.lock
 composer.phar

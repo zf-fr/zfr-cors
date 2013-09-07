@@ -32,7 +32,7 @@ use ZfrCors\Service\CorsService;
  * @author Michaël Gallego <mic.gallego@gmail.com>
  *
  * @covers \ZfrCors\Mvc\CorsRequestListener
- * @group Functional
+ * @group Coverage
  */
 class CorsRequestListenerTest extends TestCase
 {
@@ -56,6 +56,18 @@ class CorsRequestListenerTest extends TestCase
         $this->corsOptions  = new CorsOptions();
         $this->corsService  = new CorsService($this->corsOptions);
         $this->corsListener = new CorsRequestListener($this->corsService);
+    }
+
+    public function testAttach()
+    {
+        $eventManager = $this->getMock('Zend\EventManager\EventManagerInterface');
+
+        $eventManager
+            ->expects($this->once())
+            ->method('attach')
+            ->with(MvcEvent::EVENT_ROUTE, $this->isType('callable'), $this->lessThan(0));
+
+        $this->corsListener->attach($eventManager);
     }
 
     public function testReturnNothingForNonCorsRequest()

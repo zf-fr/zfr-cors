@@ -39,6 +39,7 @@ class CorsRequestListenerFactory implements FactoryInterface
     {
         /* @var $corsService CorsService */
         $corsService = $serviceLocator->get('ZfrCors\Service\CorsService');
+
         return new CorsRequestListener($corsService);
     }
 }

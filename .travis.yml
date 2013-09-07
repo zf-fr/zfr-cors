@@ -11,8 +11,9 @@ before_script:
   - composer update --prefer-source
 
 script:
-  - ./vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml --exclude-group Performance
+  - ./vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml --group Coverage
   - ./vendor/bin/phpunit --group=Functional
+  - ./vendor/bin/phpcs --standard=PSR2 ./src/ ./tests/
 
 after_script:
   - php vendor/bin/coveralls -v
