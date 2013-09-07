@@ -45,4 +45,30 @@ class ModuleTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $module->getConfig());
         $this->assertSame($module->getConfig(), unserialize(serialize($module->getConfig())), 'Config is serializable');
     }
+
+    /**
+     * @covers \ZfrCors\Module::onBootstrap
+     */
+    public function testAssertListenerIsCorrectlyRegistered()
+    {
+        $module         = new Module();
+        $mvcEvent       = $this->getMock('Zend\Mvc\MvcEvent');
+        $application    = $this->getMock('Zend\Mvc\Application', array(), array(), '', false);
+        $eventManager   = $this->getMock('Zend\EventManager\EventManagerInterface');
+        $serviceManager = $this->getMock('Zend\ServiceManager\ServiceManager');
+        $corsListener   = $this->getMock('ZfrCors\Mvc\CorsRequestListener', array(), array(), '', false);
+
+        $mvcEvent->expects($this->any())->method('getTarget')->will($this->returnValue($application));
+        $application->expects($this->any())->method('getEventManager')->will($this->returnValue($eventManager));
+        $application->expects($this->any())->method('getServiceManager')->will($this->returnValue($serviceManager));
+        $serviceManager
+            ->expects($this->any())
+            ->method('get')
+            ->with('ZfrCors\Mvc\CorsRequestListener')
+            ->will($this->returnValue($corsListener));
+
+        $eventManager->expects($this->once())->method('attach')->with($corsListener);
+
+        $module->onBootstrap($mvcEvent);
+    }
 }
