@@ -30,6 +30,8 @@ use ZfrCorsTest\Util\ServiceManagerFactory;
  *
  * @license MIT
  * @author  Marco Pivetta <ocramius@gmail.com>
+ *
+ * @group Coverage
  */
 class ModuleTest extends PHPUnit_Framework_TestCase
 {
@@ -42,25 +44,5 @@ class ModuleTest extends PHPUnit_Framework_TestCase
 
         $this->assertInternalType('array', $module->getConfig());
         $this->assertSame($module->getConfig(), unserialize(serialize($module->getConfig())), 'Config is serializable');
-    }
-
-    /**
-     * @covers \ZfrCors\Module::onBootstrap
-     */
-    public function testAssertListenerIsCorrectlyRegistered()
-    {
-        $this->markTestIncomplete('To be done');
-
-        /*$module = new Module();
-
-        $serviceManager = ServiceManagerFactory::getServiceManager();
-
-        $application = new Application(array(), $serviceManager);
-        $event       = new MvcEvent();
-        $event->setTarget($application);
-
-        $module->onBootstrap($event);
-
-        $eventManager = $serviceManager->get('EventManager');*/
     }
 }

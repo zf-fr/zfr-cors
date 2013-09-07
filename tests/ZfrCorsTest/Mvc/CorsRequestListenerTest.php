@@ -32,7 +32,7 @@ use ZfrCors\Service\CorsService;
  * @author Michaël Gallego <mic.gallego@gmail.com>
  *
  * @covers \ZfrCors\Mvc\CorsRequestListener
- * @group Functional
+ * @group Coverage
  */
 class CorsRequestListenerTest extends TestCase
 {
