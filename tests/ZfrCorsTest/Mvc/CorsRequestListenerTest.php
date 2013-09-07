@@ -83,7 +83,7 @@ class CorsRequestListenerTest extends TestCase
         $mvcEvent->setRequest($request)
                  ->setResponse($response);
 
-        $this->assertEquals($response, $this->corsListener->onCorsRequest($mvcEvent));
+        $this->assertInstanceOf('Zend\Http\Response', $this->corsListener->onCorsRequest($mvcEvent));
     }
 
     public function testReturnNothingForNormalAuthorizedCorsRequest()

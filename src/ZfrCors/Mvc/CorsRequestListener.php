@@ -74,7 +74,7 @@ class CorsRequestListener extends AbstractListenerAggregate
 
         // First, the preflight request
         if ($this->corsService->isPreflightRequest($request)) {
-            return $this->corsService->populatePreflightCorsResponse($request, $response);
+            return $this->corsService->createPreflightCorsResponse($request);
         }
 
         // Otherwise, it is the second step of the CORS request, and we let ZF continue

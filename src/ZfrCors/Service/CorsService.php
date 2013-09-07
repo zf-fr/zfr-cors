@@ -71,16 +71,15 @@ class CorsService
     }
 
     /**
-     * Populate a preflight response by adding the corresponding headers
+     * Create a preflight response by adding the corresponding headers
      *
      * @param  HttpRequest  $request
-     * @param  HttpResponse $response
      * @return HttpResponse
      */
-    public function populatePreflightCorsResponse(HttpRequest $request, HttpResponse $response)
+    public function createPreflightCorsResponse(HttpRequest $request)
     {
+        $response = new HttpResponse();
         $response->setStatusCode(200);
-        $response->setContent(''); // Preflight response should have empty body
 
         $headers = $response->getHeaders();
 
@@ -122,6 +121,20 @@ class CorsService
         $headers = $response->getHeaders();
         $headers->addHeaderLine('Access-Control-Allow-Origin', $origin);
         $headers->addHeaderLine('Access-Control-Expose-Headers', implode(', ', $this->options->getExposedHeaders()));
+
+        // If the origin is not "*", we should add the "Origin" value to the "Vary" header
+        // See more: http://www.w3.org/TR/cors/#resource-implementation
+        if ($origin !== '*') {
+            if ($headers->has('Vary')) {
+                $varyHeader = $headers->get('Vary');
+                $varyValue  = $varyHeader->getFieldValue() . ', Origin';
+
+                $headers->removeHeader($varyHeader);
+                $headers->addHeaderLine('Vary', $varyValue);
+            } else {
+                $headers->addHeaderLine('Vary', 'Origin');
+            }
+        }
 
         return $response;
     }

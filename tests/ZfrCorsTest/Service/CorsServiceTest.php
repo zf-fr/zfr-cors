@@ -105,27 +105,12 @@ class CorsServiceTest extends TestCase
         $this->assertTrue($this->corsService->isPreflightRequest($request));
     }
 
-    public function testResponseBodyIsClearedWhenResponseIsPreflighted()
-    {
-        $request = new HttpRequest();
-        $request->getHeaders()->addHeaderLine('Origin', 'foo');
-
-        $response = new HttpResponse();
-        $response->setContent('foo');
-
-        $this->corsService->populatePreflightCorsResponse($request, $response);
-
-        $this->assertEmpty($response->getContent());
-    }
-
-    public function testProperlyPopulatePreflightRequest()
+    public function testProperlyCreatePreflightResponse()
     {
         $request  = new HttpRequest();
-        $response = new HttpResponse();
-
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
 
-        $this->corsService->populatePreflightCorsResponse($request, $response);
+        $response = $this->corsService->createPreflightCorsResponse($request);
 
         $headers = $response->getHeaders();
 
@@ -143,12 +128,10 @@ class CorsServiceTest extends TestCase
     public function testDoesNotAddAllowCredentialsHeadersIfAsked()
     {
         $request  = new HttpRequest();
-        $response = new HttpResponse();
-
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
         $this->corsOptions->setAllowedCredentials(false);
 
-        $this->corsService->populatePreflightCorsResponse($request, $response);
+        $response = $this->corsService->createPreflightCorsResponse($request);
 
         $headers = $response->getHeaders();
         $this->assertFalse($headers->has('Access-Control-Allow-Credentials'));
@@ -157,12 +140,10 @@ class CorsServiceTest extends TestCase
     public function testCanReturnWildCardAllowOrigin()
     {
         $request  = new HttpRequest();
-        $response = new HttpResponse();
-
         $request->getHeaders()->addHeaderLine('Origin', 'http://funny-origin.com');
         $this->corsOptions->setAllowedOrigins(array('*'));
 
-        $this->corsService->populatePreflightCorsResponse($request, $response);
+        $response = $this->corsService->createPreflightCorsResponse($request);
 
         $headers = $response->getHeaders();
         $this->assertEquals('*', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
@@ -171,11 +152,9 @@ class CorsServiceTest extends TestCase
     public function testReturnNullForUnknownOrigin()
     {
         $request  = new HttpRequest();
-        $response = new HttpResponse();
-
         $request->getHeaders()->addHeaderLine('Origin', 'http://unauthorized-origin.com');
 
-        $this->corsService->populatePreflightCorsResponse($request, $response);
+        $response = $this->corsService->createPreflightCorsResponse($request);
 
         $headers = $response->getHeaders();
         $this->assertEquals('null', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
@@ -209,5 +188,33 @@ class CorsServiceTest extends TestCase
         );
 
         $this->corsService->populateCorsResponse($request, $response);
+    }
+
+    public function testAddVaryHeaderInNormalRequest()
+    {
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+
+        $this->corsService->populateCorsResponse($request, $response);
+
+        $headers = $response->getHeaders();
+        $this->assertTrue($headers->has('Vary'));
+    }
+
+    public function testAppendVaryHeaderInNormalRequest()
+    {
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+        $response->getHeaders()->addHeaderLine('Vary', 'Foo');
+
+        $this->corsService->populateCorsResponse($request, $response);
+
+        $headers = $response->getHeaders();
+        $this->assertTrue($headers->has('Vary'));
+        $this->assertEquals('Foo, Origin', $headers->get('Vary')->getFieldValue());
     }
 }
