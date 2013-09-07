@@ -18,13 +18,33 @@
 
 namespace ZfrCors;
 
+use Zend\EventManager\EventInterface;
+use Zend\ModuleManager\Feature\BootstrapListenerInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 
 /**
  * @licence MIT
+ * @author  Florent Blaison <florent.blaison@gmail.com>
  */
-class Module implements ConfigProviderInterface
+class Module implements
+    BootstrapListenerInterface,
+    ConfigProviderInterface
 {
+
+    /**
+     * {@inheritDoc}
+     */
+    public function onBootstrap(EventInterface $event)
+    {
+        /* @var $application \Zend\Mvc\Application */
+        $application     = $event->getTarget();
+        $serviceManager  = $application->getServiceManager();
+        $eventManager    = $application->getEventManager();
+
+        $eventManager->attach($serviceManager->get('ZfrCors\Mvc\DisallowedOriginListener'));
+        $eventManager->attach($serviceManager->get('ZfrCors\Mvc\CorsListener'));
+    }
+
     /**
      * {@inheritDoc}
      */
