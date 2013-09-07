@@ -67,14 +67,16 @@ class CorsServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->corsOptions = new CorsOptions(array(
-            'allowed_origins'     => array('http://example.com'),
-            'allowed_methods'     => array('GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'),
-            'allowed_headers'     => array('Content-Type', 'Accept'),
-            'exposed_headers'     => array('Location'),
-            'max_age'             => 10,
-            'allowed_credentials' => true,
-        ));
+        $this->corsOptions = new CorsOptions(
+            array(
+                'allowed_origins'     => array('http://example.com'),
+                'allowed_methods'     => array('GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'),
+                'allowed_headers'     => array('Content-Type', 'Accept'),
+                'exposed_headers'     => array('Location'),
+                'max_age'             => 10,
+                'allowed_credentials' => true,
+            )
+        );
 
         $this->corsService = new CorsService($this->corsOptions);
     }
@@ -117,7 +119,10 @@ class CorsServiceTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('', $response->getContent());
         $this->assertEquals('http://example.com', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
-        $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $headers->get('Access-Control-Allow-Methods')->getFieldValue());
+        $this->assertEquals(
+            'GET, POST, PUT, DELETE, OPTIONS',
+            $headers->get('Access-Control-Allow-Methods')->getFieldValue()
+        );
         $this->assertEquals('Content-Type, Accept', $headers->get('Access-Control-Allow-Headers')->getFieldValue());
         $this->assertEquals(10, $headers->get('Access-Control-Max-Age')->getFieldValue());
         $this->assertEquals(0, $headers->get('Content-Length')->getFieldValue());
