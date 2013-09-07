@@ -125,7 +125,11 @@ class CorsRequestListenerTest extends TestCase
         $mvcEvent->setRequest($request)
                  ->setResponse($response);
 
-        $this->assertEquals($response, $this->corsListener->onCorsRequest($mvcEvent));
-        $this->assertEquals(403, $response->getStatusCode());
+        $newResponse = $this->corsListener->onCorsRequest($mvcEvent);
+
+        // NOTE: a new response is created for security purpose
+        $this->assertNotEquals($response, $newResponse);
+        $this->assertEquals(403, $newResponse->getStatusCode());
+        $this->assertEquals('', $newResponse->getContent());
     }
 }
