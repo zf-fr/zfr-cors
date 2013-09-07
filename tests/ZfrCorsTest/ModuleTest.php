@@ -19,7 +19,11 @@
 namespace ZfrCorsTest;
 
 use PHPUnit_Framework_TestCase;
+use Zend\Mvc\Application;
+use Zend\Mvc\MvcEvent;
+use Zend\ServiceManager\ServiceManager;
 use ZfrCors\Module;
+use ZfrCorsTest\Util\ServiceManagerFactory;
 
 /**
  * Tests for {@see \ZfrCors\Module}
@@ -38,5 +42,25 @@ class ModuleTest extends PHPUnit_Framework_TestCase
 
         $this->assertInternalType('array', $module->getConfig());
         $this->assertSame($module->getConfig(), unserialize(serialize($module->getConfig())), 'Config is serializable');
+    }
+
+    /**
+     * @covers \ZfrCors\Module::onBootstrap
+     */
+    public function testAssertListenerIsCorrectlyRegistered()
+    {
+        $this->markTestIncomplete('To be done');
+
+        /*$module = new Module();
+
+        $serviceManager = ServiceManagerFactory::getServiceManager();
+
+        $application = new Application(array(), $serviceManager);
+        $event       = new MvcEvent();
+        $event->setTarget($application);
+
+        $module->onBootstrap($event);
+
+        $eventManager = $serviceManager->get('EventManager');*/
     }
 }

@@ -39,7 +39,7 @@ class Module implements BootstrapListenerInterface, ConfigProviderInterface
         $serviceManager  = $application->getServiceManager();
         $eventManager    = $application->getEventManager();
 
-        $eventManager->attach($serviceManager->get('ZfrCors\Mvc\CorsListener'));
+        $eventManager->attach($serviceManager->get('ZfrCors\Mvc\CorsRequestListener'));
     }
 
     /**

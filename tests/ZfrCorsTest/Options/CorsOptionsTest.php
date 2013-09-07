@@ -42,4 +42,27 @@ class CorsOptionsTest extends TestCase
         $this->assertEquals(array(), $options->getExposedHeaders(), 'No headers are exposed to the browser');
         $this->assertFalse($options->getAllowedCredentials(), 'Cookies are not allowed');
     }
+
+    public function testCanModifyOptions()
+    {
+        $options = new CorsOptions();
+
+        $options->setAllowedOrigins(array('http://example1.com', 'http://example2.com'));
+        $this->assertEquals(array('http://example1.com', 'http://example2.com'), $options->getAllowedOrigins());
+
+        $options->setAllowedMethods(array('POST', 'GET'));
+        $this->assertEquals(array('POST', 'GET'), $options->getAllowedMethods());
+
+        $options->setAllowedHeaders(array('Content-Type'));
+        $this->assertEquals(array('Content-Type'), $options->getAllowedHeaders());
+
+        $options->setMaxAge(30);
+        $this->assertEquals(30, $options->getMaxAge());
+
+        $options->setExposedHeaders(array('Location', 'X-Custom-Header'));
+        $this->assertEquals(array('Location', 'X-Custom-Header'), $options->getExposedHeaders());
+
+        $options->setAllowedCredentials(true);
+        $this->assertTrue($options->getAllowedCredentials());
+    }
 }
