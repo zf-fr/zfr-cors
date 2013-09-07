@@ -23,22 +23,37 @@ use Zend\EventManager\EventManagerInterface;
 use Zend\Http\Response as HttpResponse;
 use Zend\Http\Request as HttpRequest;
 use Zend\Mvc\MvcEvent;
+use ZfrCors\Exception\DisallowedMethodException;
 use ZfrCors\Exception\DisallowedOriginException;
+use ZfrCors\Service\CorsService;
 
 /**
- * DisallowedOriginListener
+ * DisallowedCorsRequest
  *
  * @license MIT
  * @author  Florent Blaison <florent.blaison@gmail.com>
  */
-class DisallowedOriginListener extends AbstractListenerAggregate
+class DisallowedCorsRequestListener extends AbstractListenerAggregate
 {
+    /**
+     * @var CorsService
+     */
+    protected $corsService;
+
+    /**
+     * @param CorsService $corsService
+     */
+    public function __construct(CorsService $corsService)
+    {
+        $this->corsService = $corsService;
+    }
+
     /**
      * {@inheritDoc}
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(MvcEvent::EVENT_DISPATCH_ERROR, array($this, 'onDisallowedOriginException'), 1000);
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_DISPATCH_ERROR, array($this, 'onDisallowedCorsRequest'), 1000);
     }
 
     /**
@@ -47,19 +62,21 @@ class DisallowedOriginListener extends AbstractListenerAggregate
      * @param  MvcEvent $event
      * @return mixed
      */
-    public function onDisallowedOriginException(MvcEvent $event)
+    public function onDisallowedCorsRequest(MvcEvent $event)
     {
         /** @var $response HttpResponse */
         $response  = $event->getResponse();
         $exception = $event->getParam('exception');
 
         // We just deal with our Http error codes here !
-        if (!$exception instanceof DisallowedOriginException || !$response instanceof HttpResponse) {
+        if (!$response instanceof HttpResponse
+            || !$exception instanceof DisallowedOriginException
+            || !$exception instanceof DisallowedMethodException
+        ) {
             return;
         }
 
-        $response = new HttpResponse();
-        $response->setStatusCode(403);
+        $response = $this->corsService->populateForbiddenCorsResponse($event->getRequest(), $response);
         $response->setContent($exception->getMessage());
 
         $event->setResponse($response);

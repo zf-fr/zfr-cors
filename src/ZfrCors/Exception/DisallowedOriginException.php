@@ -29,5 +29,4 @@ use ZfrCors\Exception\ExceptionInterface;
  */
 class DisallowedOriginException extends DomainException implements ExceptionInterface
 {
-
 }

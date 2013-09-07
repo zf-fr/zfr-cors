@@ -20,25 +20,25 @@ namespace ZfrCors\Factory;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use ZfrCors\Options\CorsOptions;
+use ZfrCors\Mvc\CorsRequestListener;
 use ZfrCors\Service\CorsService;
 
 /**
- * CorsServiceFactory
+ * CorsRequestListenerFactory
  *
  * @license MIT
  * @author  Florent Blaison <florent.blaison@gmail.com>
  */
-class CorsServiceFactory implements FactoryInterface
+class CorsListenerFactory implements FactoryInterface
 {
     /**
      * {@inheritDoc}
-     * @return CorsService
+     * @return CorsRequestListener
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        /* @var $corsOptions CorsOptions */
-        $corsOptions = $serviceLocator->get('ZfrCors\Options\CorsOptions');
-        return new CorsService($corsOptions);
+        /* @var $corsService CorsService */
+        $corsService = $serviceLocator->get('ZfrCors\Service\CorsService');
+        return new CorsRequestListener($corsService);
     }
 }

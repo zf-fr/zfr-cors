@@ -16,30 +16,17 @@
  * and is licensed under the MIT license.
  */
 
-namespace ZfrCors\Factory;
+namespace ZfrCors\Exception;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use ZfrCors\Mvc\CorsListener;
-use ZfrCors\Service\CorsService;
+use DomainException;
+use ZfrCors\Exception\ExceptionInterface;
 
 /**
- * CorsListenerFactory
+ * DisallowedMethodException
  *
  * @license MIT
  * @author  Florent Blaison <florent.blaison@gmail.com>
  */
-class CorsListenerFactory implements FactoryInterface
+class DisallowedMethodException extends DomainException implements ExceptionInterface
 {
-    /**
-     * {@inheritDoc}
-     * @return CorsListener
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        /* @var $corsService CorsService */
-        $corsService = $serviceLocator->get('ZfrCors\Service\CorsService');
-
-        return new CorsListener($corsService);
-    }
 }

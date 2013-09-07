@@ -33,7 +33,7 @@ class CorsOptions extends AbstractOptions
      *
      * @var array
      */
-    protected $origins = array();
+    protected $allowedOrigins = array();
 
     /**
      * Set the list of HTTP verbs.
@@ -57,34 +57,27 @@ class CorsOptions extends AbstractOptions
     protected $maxAge = 0;
 
     /**
-     * Set the list of exposed headers.
-     *
-     * @var array
-     */
-    protected $exposedHeaders = array();
-
-    /**
-     * Allow cors request with credential.
+     * Allow CORS request with credential.
      *
      * @var bool
      */
     protected $allowedCredentials = false;
 
     /**
-     * @param  array $origins
+     * @param  array $allowedOrigins
      * @return void
      */
-    public function setOrigins(array $origins)
+    public function setAllowedOrigins(array $allowedOrigins)
     {
-        $this->origins = $origins;
+        $this->allowedOrigins = $allowedOrigins;
     }
 
     /**
      * @return array
      */
-    public function getOrigins()
+    public function getAllowedOrigins()
     {
-        return $this->origins;
+        return $this->allowedOrigins;
     }
 
     /**
@@ -136,23 +129,6 @@ class CorsOptions extends AbstractOptions
     public function getMaxAge()
     {
         return $this->maxAge;
-    }
-
-    /**
-     * @param array $exposedHeaders
-     * @return void
-     */
-    public function setExposedHeaders(array $exposedHeaders)
-    {
-        $this->exposedHeaders = $exposedHeaders;
-    }
-
-    /**
-     * @return array
-     */
-    public function getExposedHeaders()
-    {
-        return $this->exposedHeaders;
     }
 
     /**
