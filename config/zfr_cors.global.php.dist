@@ -10,10 +10,10 @@ return array(
          /**
           * Set the list of allowed origins domain with protocol.
           */
-         // 'allowed_origins' => array('http://exemple.com'),
+         // 'allowed_origins' => array('http://example.com'),
 
          /**
-          * Set the list of HTTP verbs (MUST be in capital)
+          * Set the list of HTTP verbs.
           */
          // 'allowed_methods' => array('GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'),
 
@@ -26,6 +26,11 @@ return array(
           * Set the max age of the authorize request in seconds.
           */
          // 'max_age' => 10,
+
+         /**
+          * Set the list of exposed headers.
+          */
+         // 'exposed_headers' => array(),
 
          /**
           * Allow cors request with credential.

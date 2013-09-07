@@ -19,10 +19,9 @@
 return array(
     'service_manager' => array(
         'factories' => array(
-            'ZfrCors\Mvc\CorsRequestListener'           => 'ZfrCors\Factory\CorsRequestListenerFactory',
-            'ZfrCors\Mvc\DisallowedCorsRequestListener' => 'ZfrCors\Factory\DisallowedCorsRequestListenerFactory',
-            'ZfrCors\Options\CorsOptions'               => 'ZfrCors\Factory\CorsOptionsFactory',
-            'ZfrCors\Service\CorsService'               => 'ZfrCors\Factory\CorsServiceFactory',
+            'ZfrCors\Mvc\CorsRequestListener' => 'ZfrCors\Factory\CorsRequestListenerFactory',
+            'ZfrCors\Options\CorsOptions'     => 'ZfrCors\Factory\CorsOptionsFactory',
+            'ZfrCors\Service\CorsService'     => 'ZfrCors\Factory\CorsServiceFactory',
         ),
     ),
 

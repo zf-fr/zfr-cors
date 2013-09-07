@@ -57,6 +57,13 @@ class CorsOptions extends AbstractOptions
     protected $maxAge = 0;
 
     /**
+     * Set the list of exposed headers.
+     *
+     * @var array
+     */
+    protected $exposedHeaders = array();
+
+    /**
      * Allow CORS request with credential.
      *
      * @var bool
@@ -129,6 +136,23 @@ class CorsOptions extends AbstractOptions
     public function getMaxAge()
     {
         return $this->maxAge;
+    }
+
+    /**
+     * @param array $exposedHeaders
+     * @return void
+     */
+    public function setExposedHeaders(array $exposedHeaders)
+    {
+        $this->exposedHeaders = $exposedHeaders;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExposedHeaders()
+    {
+        return $this->exposedHeaders;
     }
 
     /**

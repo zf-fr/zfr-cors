@@ -70,19 +70,6 @@ class CorsService
     }
 
     /**
-     * Check if the origin is allowed
-     *
-     * @param HttpRequest $request
-     * @return bool
-     */
-    public function isOriginAllowed(HttpRequest $request)
-    {
-        $origin = strtoupper($request->getHeaders('Origin')->getFieldValue());
-
-        return in_array($origin, $this->options->getAllowedOrigins());
-    }
-
-    /**
      * Check if the method is allowed
      *
      * @param  HttpRequest $request
@@ -103,10 +90,11 @@ class CorsService
     public function populatePreflightCorsResponse(HttpRequest $request, HttpResponse $response)
     {
         $response->setStatusCode(200);
+        $response->setContent(''); // Preflight answer should not have body
 
         $headers = $response->getHeaders();
 
-        $headers->addHeaderLine('Access-Control-Allow-Origin', $request->getHeader('Origin')->getFieldValue());
+        $headers->addHeaderLine('Access-Control-Allow-Origin', $this->getAllowedOriginValue($request));
         $headers->addHeaderLine('Access-Control-Allow-Methods', implode(',', $this->options->getAllowedMethods()));
         $headers->addHeaderLine('Access-Control-Allow-Headers', implode(',', $this->options->getAllowedHeaders()));
         $headers->addHeaderLine('Access-Control-Max-Age', $this->options->getMaxAge());
@@ -115,21 +103,6 @@ class CorsService
         if ($this->options->getAllowedCredentials()) {
             $headers->addHeaderLine('Access-Control-Allow-Credentials', $this->options->getAllowedCredentials());
         }
-
-        return $response;
-    }
-
-    /**
-     * Populate a forbidden CORS response
-     *
-     * @param  HttpRequest  $request
-     * @param  HttpResponse $response
-     * @return HttpResponse
-     */
-    public function populateForbiddenCorsResponse(HttpRequest $request, HttpResponse $response)
-    {
-        $response = $this->populatePreflightCorsResponse($request, $response);
-        $response->setStatusCode(403);
 
         return $response;
     }
@@ -144,8 +117,34 @@ class CorsService
     public function populateCorsResponse(HttpRequest $request, HttpResponse $response)
     {
         $headers = $response->getHeaders();
-        $headers->addHeaderLine('Access-Control-Allow-Origin', $request->getHeader('Origin')->getFieldValue());
+        $headers->addHeaderLine('Access-Control-Allow-Origin', $this->getAllowedOriginValue($request));
+        $headers->addHeaderLine('Access-Control-Expose-Headers', $this->options->getExposedHeaders());
 
         return $response;
+    }
+
+    /**
+     * Get a single value for the "Access-Control-Allow-Origin" header
+     *
+     * According to the spec, it is not valid to set multiple origins separated by commas. Only accepted
+     * value are wildcard ("*"), an exact domain or a null string.
+     *
+     * @link http://www.w3.org/TR/cors/#access-control-allow-origin-response-header
+     * @param  HttpRequest $request
+     * @return string
+     */
+    protected function getAllowedOriginValue(HttpRequest $request)
+    {
+        $allowedOrigins = $this->options->getAllowedOrigins();
+
+        if (in_array('*', $allowedOrigins)) {
+            return '*';
+        }
+
+        if (in_array($request->getHeader('Origin')->getFieldValue(), $allowedOrigins)) {
+            return $request->getHeader('Origin')->getFieldValue();
+        }
+
+        return 'null';
     }
 }

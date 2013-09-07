@@ -76,38 +76,10 @@ class CorsRequestListener extends AbstractListenerAggregate
 
         // First, the preflight request
         if ($this->corsService->isPreflightRequest($request)) {
-            return $this->handlePreflightRequest($request, $response);
+            return $this->corsService->populatePreflightCorsResponse($request, $response);
         }
 
         // Otherwise, it is the second step of the CORS request
         return $this->corsService->populateCorsResponse($request, $response);
-    }
-
-    /**
-     * Handle the preflight request by checking if the preflight request should be accepted
-     *
-     * @param  HttpRequest  $request
-     * @param  HttpResponse $response
-     * @return HttpResponse $response
-     * @throws DisallowedOriginException
-     * @throws DisallowedMethodException
-     */
-    protected function handlePreflightRequest(HttpRequest $request, HttpResponse $response)
-    {
-        if (!$this->corsService->isOriginAllowed($request)) {
-            throw new DisallowedOriginException(sprintf(
-                'The given origin ("%s") is not allowed by the server',
-                $request->getHeader('Origin')->getFieldValue()
-            ));
-        }
-
-        if (!$this->corsService->isMethodAllowed($request)) {
-            throw new DisallowedMethodException(sprintf(
-                'The given method ("%s") is not allowed by the server',
-                strtoupper($request->getMethod())
-            ));
-        }
-
-        return $this->corsService->populatePreflightCorsResponse($request, $response);
     }
 }
