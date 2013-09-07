@@ -23,16 +23,15 @@ use Zend\EventManager\EventManagerInterface;
 use Zend\Http\Response as HttpResponse;
 use Zend\Http\Request as HttpRequest;
 use Zend\Mvc\MvcEvent;
-use ZfrCors\Exception\DisallowedOriginException;
 use ZfrCors\Service\CorsService;
 
 /**
- * CorsListener
+ * CorsRequestListener
  *
  * @license MIT
  * @author  Florent Blaison <florent.blaison@gmail.com>
  */
-class CorsListener extends AbstractListenerAggregate
+class CorsRequestListener extends AbstractListenerAggregate
 {
     /**
      * @var CorsService
@@ -52,32 +51,32 @@ class CorsListener extends AbstractListenerAggregate
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(MvcEvent::EVENT_ROUTE, array($this, 'onCors'), -10);
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_ROUTE, array($this, 'onCorsRequest'), -10);
     }
 
     /**
-     * Get the preflight options request authorization
+     * Handle a CORS request (either preflight or normal CORS request)
      *
      * @param  MvcEvent $event
      * @return mixed
      */
-    public function onCors(MvcEvent $event)
+    public function onCorsRequest(MvcEvent $event)
     {
         /** @var $request HttpRequest */
         $request  = $event->getRequest();
         /** @var $response HttpResponse */
         $response = $event->getResponse();
 
-        try{
-            $response = $this->corsService->prePopulateCorsResponse($request, $response);
-        } catch (DisallowedOriginException $e) {
-            $event->stopPropagation();
+        if (!$request instanceof HttpRequest || !$this->corsService->isCorsRequest($request)) {
+            return;
         }
 
+        // First, the preflight request
         if ($this->corsService->isPreflightRequest($request)) {
-            $response = $this->corsService->populateCorsResponse($response);
-
-            return $response;
+            return $this->corsService->populatePreflightCorsResponse($request, $response);
         }
+
+        // Otherwise, it is the second step of the CORS request
+        return $this->corsService->populateCorsResponse($request, $response);
     }
 }

@@ -16,14 +16,27 @@
  * and is licensed under the MIT license.
  */
 
-namespace ZfrCors\Exception;
+namespace ZfrCorsTest\Factory;
+
+use PHPUnit_Framework_TestCase as TestCase;
+use Zend\ServiceManager\ServiceManager;
+use ZfrCorsTest\Util\ServiceManagerFactory;
 
 /**
- * Exception interface for every ZfrCors exceptions
+ * Integration tests for {@see \ZfrCors\Service\CorsService}
  *
- * @license MIT
- * @author  Florent Blaison <florent.blaison@gmail.com>
+ * @author Michaël Gallego <mic.gallego@gmail.com>
+ *
+ * @covers \ZfrCors\Factory\CorsOptionsFactory
+ * @group Functional
  */
-interface ExceptionInterface
+class CorsOptionsFactoryTest extends TestCase
 {
+    public function testCanCreateOptions()
+    {
+        $serviceManager = ServiceManagerFactory::getServiceManager();
+        $options        = $serviceManager->get('ZfrCors\Options\CorsOptions');
+
+        $this->assertInstanceOf('ZfrCors\Options\CorsOptions', $options);
+    }
 }

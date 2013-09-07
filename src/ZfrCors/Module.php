@@ -26,9 +26,7 @@ use Zend\ModuleManager\Feature\ConfigProviderInterface;
  * @licence MIT
  * @author  Florent Blaison <florent.blaison@gmail.com>
  */
-class Module implements
-    BootstrapListenerInterface,
-    ConfigProviderInterface
+class Module implements BootstrapListenerInterface, ConfigProviderInterface
 {
 
     /**
@@ -41,8 +39,7 @@ class Module implements
         $serviceManager  = $application->getServiceManager();
         $eventManager    = $application->getEventManager();
 
-        $eventManager->attach($serviceManager->get('ZfrCors\Mvc\DisallowedOriginListener'));
-        $eventManager->attach($serviceManager->get('ZfrCors\Mvc\CorsListener'));
+        $eventManager->attach($serviceManager->get('ZfrCors\Mvc\CorsRequestListener'));
     }
 
     /**
