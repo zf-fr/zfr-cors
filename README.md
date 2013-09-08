@@ -48,7 +48,7 @@ With CORS, you can allow your server to serve such requests. For more informatio
 
 ### Event registration
 
-ZfrCors registers a listener (`ZfrCors\Mvc\CorsRequestListener`) to the `MvcEvent::EVENT_ROUTE` route, with a priority
+ZfrCors registers a listener (`ZfrCors\Mvc\CorsRequestListener`) to the `MvcEvent::EVENT_ROUTE` event, with a priority
 of -1. This means that this listener is executed AFTER the route has been matched. This will allow us, in the future,
 to filter CORS requests by route name.
 
