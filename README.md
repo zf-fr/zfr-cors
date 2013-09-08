@@ -57,18 +57,18 @@ to filter CORS requests by route name.
 As of now, all the various options are set globally for all routes. In the future, we may add a way to support
 configuring CORS per routes. Here are the various options you can set:
 
-* allowed_origins: (array) List of allowed origins. To allow any origin, you can use the wildcard (*) character. If
+* `allowed_origins`: (array) List of allowed origins. To allow any origin, you can use the wildcard (*) character. If
 multiple origins are specified, ZfrCors will automatically check the "Origin" header's value, and only return the
 allowed domain (if any) in the "Allow-Access-Control-Origin" response header.
-* allowed_methods: (array) List of allowed HTTP methods. Those methods will be returned for the preflight request to
+* `allowed_methods`: (array) List of allowed HTTP methods. Those methods will be returned for the preflight request to
 indicate the client which methods are allowed. You can even specify custom HTTP verbs.
-* allowed_headers: (array) List of allowed headers that will be returned for the preflight request. This indicate to
+* `allowed_headers`: (array) List of allowed headers that will be returned for the preflight request. This indicate to
 the client which headers are permitted to be sent when doing the actual request.
-* max_age: (int) Maximum age the preflight request is cached by the browser. This prevents the client from sending
+* `max_age`: (int) Maximum age the preflight request is cached by the browser. This prevents the client from sending
 a preflight request for each request.
-* exposed_headers: (array) List of response headers that are allowed to be read in the client. Please note that some
+* `exposed_headers`: (array) List of response headers that are allowed to be read in the client. Please note that some
 browsers do not implement this feature correctly.
-* allowed_credentials: (boolean) If true, it allows the browser to send cookies along the request.
+* `allowed_credentials`: (boolean) If true, it allows the browser to send cookies along the request.
 
 ### Preflight request
 
