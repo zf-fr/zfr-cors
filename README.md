@@ -7,17 +7,6 @@
 
 ZfrCors is a simple ZF2 module that helps you to deal with Cross-Origin Resource Sharing (CORS).
 
-## What is CORS ?
-
-CORS is a mechanism that allows to perform cross-origin requests from your browser. For instance, let's say that your
-website is hosted in the domain `http://example.com`. By default, you won't be allowed to perform AJAX requests to
-another domain for security reasons (for instance `http://funny-domain.com`).
-
-With CORS, you can allow your server to serve such requests. For more information, here are very valuable resources:
-
-* [Mozilla documentation about CORS](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS)
-* [CORS server flowchart](http://www.html5rocks.com/static/images/cors_server_flowchart.png)
-
 ## What is ZfrCors ?
 
 ZfrCors is a Zend Framework 2 module that allow to easily configure your ZF 2 application so that it automatically
@@ -25,7 +14,7 @@ builds HTTP responses that follow the CORS documentation.
 
 ### Requirements
 
-* Zend Framework 2: >= 2.2
+* [Zend Framework 2](https://github.com/zendframework/zf2): >= 2.2
 
 ### Roadmap
 
@@ -44,18 +33,60 @@ and configure it to suit your needs.
 
 This file has a basic documentation for most options.
 
+## Documentation
+
+### What is CORS ?
+
+CORS is a mechanism that allows to perform cross-origin requests from your browser. For instance, let's say that your
+website is hosted in the domain `http://example.com`. By default, it won't be allowed to perform AJAX requests to
+another domain for security reasons (for instance `http://funny-domain.com`).
+
+With CORS, you can allow your server to serve such requests. For more information, here are very valuable resources:
+
+* [Mozilla documentation about CORS](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS)
+* [CORS server flowchart](http://www.html5rocks.com/static/images/cors_server_flowchart.png)
+
+### Event registration
+
+ZfrCors registers a listener (`ZfrCors\Mvc\CorsRequestListener`) to the `MvcEvent::EVENT_ROUTE` route, with a priority
+of -1. This means that this listener is executed AFTER the route has been matched. This will allow us, in the future,
+to filter CORS requests by route name.
+
+### Configuring the module
+
+As of now, all the various options are set globally for all routes. In the future, we may add a way to support
+configuring CORS per routes. Here are the various options you can set:
+
+* allowed_origins: (array) List of allowed origins. To allow any origin, you can use the wildcard (*) character. If
+multiple origins are specified, ZfrCors will automatically check the "Origin" header's value, and only return the
+allowed domain (if any) in the "Allow-Access-Control-Origin" response header.
+* allowed_methods: (array) List of allowed HTTP methods. Those methods will be returned for the preflight request to
+indicate the client which methods are allowed. You can even specify custom HTTP verbs.
+* allowed_headers: (array) List of allowed headers that will be returned for the preflight request. This indicate to
+the client which headers are permitted to be sent when doing the actual request.
+* max_age: (int) Maximum age the preflight request is cached by the browser. This prevents the client from sending
+a preflight request for each request.
+* exposed_headers: (array) List of response headers that are allowed to be read in the client. Please note that some
+browsers do not implement this feature correctly.
+* allowed_credentials: (boolean) If true, it allows the browser to send cookies along the request.
+
+### Preflight request
+
+If ZfrCors detects a preflight CORS request, a new response will be created and ZfrCors will send the appropriate
+headers according to your configuration. The response will be always sent with a 200 status code (OK). No more
+processing in the response can be done once the preflight request has been sent.
+
+### Actual request
+
+When the actual request is made, ZfrCors first check it the origin is allowed. If it is not, a new response is
+created with a 403 status code (Unauthorized) so that no useless work is done by the server.
+
+Otherwise, ZfrCors will just add the appropriate headers.
+
 ### Security concerns
 
-When using CORS requests, you have to distinguish two situations:
+Don't use this module to secure your application! You must use a proper authorization module (like
+[BjyAuthorize](https://github.com/bjyoungblood/BjyAuthorize), [ZfcRbac](https://github.com/ZF-Commons/ZfcRbac) or
+[SpiffyAuthorize](https://github.com/spiffyjr/spiffy-authorize).
 
-* Simple requests (GET, POST) with no custom header: a CORS request is directly made to your server. ZfrCors
-will automatically check if the value inside the "Origin" header is allowed by your config. If this is the
-case, ZfrRest will set the appropriate response answers, and let your application populate the response
-normally. Otherwise, ZfrCors will automatically return a response with a 403 (Unauthorized) status code.
-* Complex requests (PUT, DELETE...): your browser will first make a so-called "preflight" request. This is
-a simple OPTIONS request that ask your server the permission to make the request. ZfrRest will automatically
-create a preflight response and directly returns. Based on this answer, the browser will decide if it has
-authorization to perform the real request.
-
-However, please don't use this module for securing your API. You still MUST have a solid security layer in
-your application!
+ZfrCors only allows to accept or refuse a cross-origin request, nothing more!
