@@ -91,6 +91,15 @@ class CorsServiceTest extends TestCase
         $this->assertEquals(true, $this->corsService->isCorsRequest($request));
     }
 
+    public function testIsNotCorsRequestIfNotACrossRequest()
+    {
+        $request = new HttpRequest();
+        $request->setUri('http://example.com');
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+        $this->assertEquals(false, $this->corsService->isCorsRequest($request));
+    }
+
     public function testCanDetectPreflightRequest()
     {
         $request = new HttpRequest();

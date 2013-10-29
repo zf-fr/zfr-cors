@@ -18,6 +18,7 @@
 
 namespace ZfrCors\Service;
 
+use Zend\Uri\UriFactory;
 use ZfrCors\Exception\DisallowedOriginException;
 use ZfrCors\Options\CorsOptions;
 use Zend\Http\Request as HttpRequest;
@@ -47,14 +48,23 @@ class CorsService
     }
 
     /**
-     * Check if the HTTP request is a CORS request by checking if the Origin header is present
+     * Check if the HTTP request is a CORS request by checking if the Origin header is present and that the
+     * request URI is not the same as the one in the Origin
      *
      * @param HttpRequest $request
      * @return bool
      */
     public function isCorsRequest(HttpRequest $request)
     {
-        return $request->getHeaders()->has('Origin');
+        $headers = $request->getHeaders();
+
+        if (!$headers->has('Origin')) {
+            return false;
+        }
+
+        $originUri = UriFactory::factory($headers->get('Origin')->getFieldValue());
+
+        return $originUri->getHost() !== $request->getUri()->getHost();
     }
 
     /**
