@@ -20,6 +20,8 @@ Install the module by typing (or add it to your `composer.json` file):
 $ php composer.phar require zfr/zfr-cors:1.0.*
 ```
 
+Then, enable it by adding "ZfrCors" in your `application.config.php` file.
+
 By default, ZfrCors is configured to deny every CORS requests. To change that, you need to copy
 the [`config/zfr_cors.global.php.dist`](config/zfr_cors.global.php.dist) file to your `autoload` folder
 (remove the `.dist` extension), and modify it to suit your needs.
