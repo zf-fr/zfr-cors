@@ -147,6 +147,10 @@ class CorsService
                 $headers->addHeaderLine('Vary', 'Origin');
             }
         }
+		
+		if ($this->options->getAllowedCredentials()) {
+            $headers->addHeaderLine('Access-Control-Allow-Credentials', 'true');
+        }
 
         return $response;
     }
