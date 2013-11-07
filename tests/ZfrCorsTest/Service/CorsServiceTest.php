@@ -231,8 +231,8 @@ class CorsServiceTest extends TestCase
         $this->assertTrue($headers->has('Vary'));
         $this->assertEquals('Foo, Origin', $headers->get('Vary')->getFieldValue());
     }
-	
-	public function testPopulatesAllowCredentialsNormalCorsRequest()
+
+    public function testPopulatesAllowCredentialsNormalCorsRequest()
     {
         $request  = new HttpRequest();
         $response = new HttpResponse();
