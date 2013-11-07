@@ -1,6 +1,6 @@
 # 1.0.2
 
-- Properly set "Access-Control-Allow-Credentials" for normal requests if credentials are allowed. [#13](https://github.com/zf-fr/zfr-cors/pull/13)
+- Properly set "Access-Control-Allow-Credentials" for normal requests if credentials are allowed ([#13](https://github.com/zf-fr/zfr-cors/pull/13)).
 
 # 1.0.1
 
