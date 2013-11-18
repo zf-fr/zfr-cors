@@ -91,3 +91,9 @@ Don't use this module to secure your application! You must use a proper authoriz
 [SpiffyAuthorize](https://github.com/spiffyjr/spiffy-authorize).
 
 ZfrCors only allows to accept or refuse a cross-origin request.
+
+### Custom schemes
+
+Internally, ZfrCors uses `Zend\Uri\UriFactory` class. If you are using custom schemes (for instance if you are
+testing your API with some Google Chrome extensions), you need to add support for those schemes by adding them to
+the `UriFactory` config (please [refer to the doc](http://framework.zend.com/manual/2.2/en/modules/zend.uri.html#creating-a-new-custom-class-uri).
