@@ -41,7 +41,7 @@ class CorsRequestListener extends AbstractListenerAggregate
 
     /**
      * Whether or not a preflight request was detected
-     * 
+     *
      * @var bool
      */
     protected $isPreflight = false;
@@ -69,7 +69,7 @@ class CorsRequestListener extends AbstractListenerAggregate
     /**
      * Handle a CORS preflight request
      *
-     * @param  MvcEvent $event
+     * @param  MvcEvent          $event
      * @return null|HttpResponse
      */
     public function onCorsPreflight(MvcEvent $event)
@@ -93,13 +93,14 @@ class CorsRequestListener extends AbstractListenerAggregate
 
         // Preflight -- return a response now!
         $this->isPreflight = true;
+
         return $this->corsService->createPreflightCorsResponse($request);
     }
 
     /**
      * Handle a CORS request (non-preflight, normal CORS request)
      *
-     * @param  MvcEvent $event
+     * @param MvcEvent $event
      */
     public function onCorsRequest(MvcEvent $event)
     {

@@ -88,7 +88,7 @@ class CorsOptions extends AbstractOptions
     }
 
     /**
-     * @param array $allowedMethods
+     * @param  array $allowedMethods
      * @return void
      */
     public function setAllowedMethods(array $allowedMethods)
@@ -109,7 +109,7 @@ class CorsOptions extends AbstractOptions
     }
 
     /**
-     * @param array $allowedHeaders
+     * @param  array $allowedHeaders
      * @return void
      */
     public function setAllowedHeaders(array $allowedHeaders)
@@ -126,7 +126,7 @@ class CorsOptions extends AbstractOptions
     }
 
     /**
-     * @param int $maxAge
+     * @param  int  $maxAge
      * @return void
      */
     public function setMaxAge($maxAge)
@@ -143,7 +143,7 @@ class CorsOptions extends AbstractOptions
     }
 
     /**
-     * @param array $exposedHeaders
+     * @param  array $exposedHeaders
      * @return void
      */
     public function setExposedHeaders(array $exposedHeaders)
@@ -160,7 +160,7 @@ class CorsOptions extends AbstractOptions
     }
 
     /**
-     * @param bool $allowedCredentials
+     * @param  bool $allowedCredentials
      * @return void
      */
     public function setAllowedCredentials($allowedCredentials)
