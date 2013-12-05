@@ -63,9 +63,13 @@ class CorsRequestListenerTest extends TestCase
         $eventManager = $this->getMock('Zend\EventManager\EventManagerInterface');
 
         $eventManager
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('attach')
-            ->with(MvcEvent::EVENT_ROUTE, $this->isType('callable'), $this->lessThan(0));
+            ->with(MvcEvent::EVENT_ROUTE, $this->isType('callable'), $this->LessThan(1));
+        $eventManager
+            ->expects($this->at(1))
+            ->method('attach')
+            ->with(MvcEvent::EVENT_FINISH, $this->isType('callable'), $this->greaterThan(1));
 
         $this->corsListener->attach($eventManager);
     }
@@ -79,6 +83,7 @@ class CorsRequestListenerTest extends TestCase
         $mvcEvent->setRequest($request)
                  ->setResponse($response);
 
+        $this->assertNull($this->corsListener->onCorsPreflight($mvcEvent));
         $this->assertNull($this->corsListener->onCorsRequest($mvcEvent));
     }
 
@@ -95,7 +100,7 @@ class CorsRequestListenerTest extends TestCase
         $mvcEvent->setRequest($request)
                  ->setResponse($response);
 
-        $this->assertInstanceOf('Zend\Http\Response', $this->corsListener->onCorsRequest($mvcEvent));
+        $this->assertInstanceOf('Zend\Http\Response', $this->corsListener->onCorsPreflight($mvcEvent));
     }
 
     public function testReturnNothingForNormalAuthorizedCorsRequest()
@@ -125,9 +130,10 @@ class CorsRequestListenerTest extends TestCase
         $mvcEvent->setRequest($request)
                  ->setResponse($response);
 
-        $newResponse = $this->corsListener->onCorsRequest($mvcEvent);
+        $this->corsListener->onCorsRequest($mvcEvent);
 
         // NOTE: a new response is created for security purpose
+        $newResponse = $mvcEvent->getResponse();
         $this->assertNotEquals($response, $newResponse);
         $this->assertEquals(403, $newResponse->getStatusCode());
         $this->assertEquals('', $newResponse->getContent());
