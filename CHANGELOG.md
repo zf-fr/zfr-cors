@@ -1,3 +1,11 @@
+# 1.1.0
+
+- Segregate preflight vs. inflight CORS requests. Preflight detection continues
+  to happen during the "route" event. However, inflight requests are detected
+  now during the "finish" event in order to ensure they operate on the same
+  response object as will be sent back to the client.
+  ([#16](https://github.com/zf-fr/zfr-cors/pull/16))
+
 # 1.0.2
 
 - Properly set "Access-Control-Allow-Credentials" for normal requests if credentials are allowed ([#13](https://github.com/zf-fr/zfr-cors/pull/13)).

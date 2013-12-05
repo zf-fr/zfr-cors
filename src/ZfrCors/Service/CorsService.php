@@ -51,7 +51,7 @@ class CorsService
      * Check if the HTTP request is a CORS request by checking if the Origin header is present and that the
      * request URI is not the same as the one in the Origin
      *
-     * @param HttpRequest $request
+     * @param  HttpRequest $request
      * @return bool
      */
     public function isCorsRequest(HttpRequest $request)
@@ -70,7 +70,7 @@ class CorsService
     /**
      * Check if the CORS request is a preflight request
      *
-     * @param HttpRequest $request
+     * @param  HttpRequest $request
      * @return bool
      */
     public function isPreflightRequest(HttpRequest $request)
@@ -109,8 +109,8 @@ class CorsService
     /**
      * Populate a simple CORS response
      *
-     * @param  HttpRequest $request
-     * @param  HttpResponse $response
+     * @param  HttpRequest               $request
+     * @param  HttpResponse              $response
      * @return HttpResponse
      * @throws DisallowedOriginException If the origin is not allowed
      */
@@ -147,7 +147,7 @@ class CorsService
                 $headers->addHeaderLine('Vary', 'Origin');
             }
         }
-        
+
         if ($this->options->getAllowedCredentials()) {
             $headers->addHeaderLine('Access-Control-Allow-Credentials', 'true');
         }

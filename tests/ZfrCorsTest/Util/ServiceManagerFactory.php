@@ -56,7 +56,7 @@ abstract class ServiceManagerFactory
     }
 
     /**
-     * @param array|null $config
+     * @param  array|null     $config
      * @return ServiceManager
      */
     public static function getServiceManager(array $config = null)
