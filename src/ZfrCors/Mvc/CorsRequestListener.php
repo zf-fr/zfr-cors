@@ -60,7 +60,7 @@ class CorsRequestListener extends AbstractListenerAggregate
     public function attach(EventManagerInterface $events)
     {
         // Preflight can be handled during the route event, and should return early
-        $this->listeners[] = $events->attach(MvcEvent::EVENT_ROUTE,  array($this, 'onCorsPreflight'), -1);
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_ROUTE, array($this, 'onCorsPreflight'), -1);
 
         // "in"flight should be handled during "FINISH" to ensure we operate on the actual route being returned
         $this->listeners[] = $events->attach(MvcEvent::EVENT_FINISH, array($this, 'onCorsRequest'), 100);
