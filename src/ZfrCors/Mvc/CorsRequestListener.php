@@ -79,8 +79,6 @@ class CorsRequestListener extends AbstractListenerAggregate
 
         /** @var $request HttpRequest */
         $request  = $event->getRequest();
-        /** @var $response HttpResponse */
-        $response = $event->getResponse();
 
         if (!$request instanceof HttpRequest || !$this->corsService->isCorsRequest($request)) {
             return;
