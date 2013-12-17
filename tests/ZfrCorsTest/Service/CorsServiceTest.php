@@ -245,4 +245,12 @@ class CorsServiceTest extends TestCase
 
         $this->assertEquals('true', $headers->get('Access-Control-Allow-Credentials')->getFieldValue());
     }
+
+    public function testCanDetectCorsRequestFromSameHostButDifferentPort()
+    {
+        $request = new HttpRequest();
+        $request->setUri('http://example.com');
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com:9000');
+        $this->assertTrue($this->corsService->isCorsRequest($request));
+    }
 }
