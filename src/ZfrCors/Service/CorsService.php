@@ -62,9 +62,12 @@ class CorsService
             return false;
         }
 
-        $originUri = UriFactory::factory($headers->get('Origin')->getFieldValue());
+        $originUri  = UriFactory::factory($headers->get('Origin')->getFieldValue());
+        $requestUri = $request->getUri();
 
-        return $originUri->getHost() !== $request->getUri()->getHost();
+        $equivHosts = $originUri->getHost() === $requestUri->getHost();
+        $equivPorts = $originUri->getPort() === $requestUri->getPort();
+        return (!$equivHosts || !$equivPorts);
     }
 
     /**
