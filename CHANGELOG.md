@@ -1,3 +1,7 @@
+# 1.1.1
+
+- ZfrCors now properly detects a CORS request if the port is different.
+
 # 1.1.0
 
 - Segregate preflight vs. inflight CORS requests. Preflight detection continues
