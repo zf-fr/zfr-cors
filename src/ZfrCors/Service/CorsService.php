@@ -65,9 +65,12 @@ class CorsService
         $originUri  = UriFactory::factory($headers->get('Origin')->getFieldValue());
         $requestUri = $request->getUri();
 
-        $equivHosts = $originUri->getHost() === $requestUri->getHost();
-        $equivPorts = $originUri->getPort() === $requestUri->getPort();
-        return (!$equivHosts || !$equivPorts);
+        // According to the spec (http://tools.ietf.org/html/rfc6454#section-4), we should check host, port and scheme
+
+        return (!($originUri->getHost() === $requestUri->getHost())
+            || !($originUri->getPort() === $requestUri->getPort())
+            || !($originUri->getScheme() === $requestUri->getScheme())
+        );
     }
 
     /**

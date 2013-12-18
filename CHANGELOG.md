@@ -1,3 +1,7 @@
+# 1.1.2
+
+- ZfrCors now properly detects a CORS request if the scheme is different.
+
 # 1.1.1
 
 - ZfrCors now properly detects a CORS request if the port is different.

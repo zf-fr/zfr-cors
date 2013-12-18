@@ -253,4 +253,12 @@ class CorsServiceTest extends TestCase
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com:9000');
         $this->assertTrue($this->corsService->isCorsRequest($request));
     }
+
+    public function testCanDetectCorsRequestFromSameHostButDifferentScheme()
+    {
+        $request = new HttpRequest();
+        $request->setUri('https://example.com');
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+        $this->assertTrue($this->corsService->isCorsRequest($request));
+    }
 }
