@@ -17,7 +17,7 @@ builds HTTP responses that follow the CORS documentation.
 Install the module by typing (or add it to your `composer.json` file):
 
 ```sh
-$ php composer.phar require zfr/zfr-cors:1.0.*
+$ php composer.phar require zfr/zfr-cors:1.*
 ```
 
 Then, enable it by adding "ZfrCors" in your `application.config.php` file.
