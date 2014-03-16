@@ -124,7 +124,6 @@ class CorsRequestListener extends AbstractListenerAggregate
             $response = new HttpResponse(); // Clear response for security
             $response->setStatusCode(403)
                      ->setReasonPhrase($exception->getMessage());
-
         }
 
         $event->setResponse($response);
