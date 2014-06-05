@@ -51,8 +51,8 @@ class CorsOptionsTest extends TestCase
         $options->setAllowedOrigins(array('http://example1.com', 'http://example2.com'));
         $this->assertEquals(array('http://example1.com', 'http://example2.com'), $options->getAllowedOrigins());
 
-        $options->setAllowedOriginsRegex('|http://(\w*.)?example.com|');
-        $this->assertEquals('|http://(\w*.)?example.com|', $options->getAllowedOriginsRegex());
+        $options->setAllowedOriginsRegex('|http://(\w+\.)?example\.com|');
+        $this->assertEquals('|http://(\w+\.)?example\.com|', $options->getAllowedOriginsRegex());
 
         $options->setAllowedMethods(array('POST', 'GET'));
         $this->assertEquals(array('POST', 'GET'), $options->getAllowedMethods());

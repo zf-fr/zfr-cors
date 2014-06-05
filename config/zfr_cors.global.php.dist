@@ -15,7 +15,7 @@ return array(
          /**
           * Set allows origins regular expression.
           */
-         // 'allowed_origins_regex' => '/http://(\w*.)?example\.com',
+         // 'allowed_origins_regex' => '/http://(\w+\.)?example\.com',
 
          /**
           * Set the list of HTTP verbs.

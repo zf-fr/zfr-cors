@@ -70,7 +70,7 @@ class CorsServiceTest extends TestCase
         $this->corsOptions = new CorsOptions(
             array(
                 'allowed_origins'       => array('http://example.com'),
-                'allowed_origins_regex' => '|http://(\w*.)?examples.com|',
+                'allowed_origins_regex' => '|http://(\w+\.)?examples\.com|',
                 'allowed_methods'       => array('GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'),
                 'allowed_headers'       => array('Content-Type', 'Accept'),
                 'exposed_headers'       => array('Location'),
@@ -293,5 +293,4 @@ class CorsServiceTest extends TestCase
         $request->getHeaders()->addHeaderLine('Origin', 'http://wildcard.examples.com');
         $this->assertTrue($this->corsService->isCorsRequest($request));
     }
-
 }

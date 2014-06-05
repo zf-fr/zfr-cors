@@ -179,22 +179,19 @@ class CorsService
             return '*';
         }
 
-        $origin = $request->getHeader('Origin')->getFieldValue();
+        ;
         //Check against array, list of all exact matches
-        if (!empty($allowedOrigins))
-        {
-            if (in_array($origin, $allowedOrigins)) {
-                return $origin;
+        if (!empty($allowedOrigins)) {
+            if (in_array($request->getHeader('Origin')->getFieldValue(), $allowedOrigins)) {
+                return $request->getHeader('Origin')->getFieldValue();
             }
         }
 
         //Check against regex
         $allowedOriginsRegex = $this->options->getAllowedOriginsRegex();
-        if (!empty($allowedOriginsRegex))
-        {
-            if (preg_match($allowedOriginsRegex, $origin))
-            {
-                return $origin;
+        if (!empty($allowedOriginsRegex) && is_string($allowedOriginsRegex)) {
+            if (preg_match($allowedOriginsRegex, $request->getHeader('Origin')->getFieldValue())) {
+                return $request->getHeader('Origin')->getFieldValue();
             }
         }
 

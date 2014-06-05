@@ -129,7 +129,7 @@ class CorsRequestListenerTest extends TestCase
 
         $request->getHeaders()->addHeaderLine('Origin', 'http://wildcard.examples.com');
 
-        $this->corsOptions->setAllowedOriginsRegex('|http://(\w*.)?examples\.com|');
+        $this->corsOptions->setAllowedOriginsRegex('|http://(\w+\.)?examples\.com|');
 
         $mvcEvent->setRequest($request)
                  ->setResponse($response);
@@ -167,7 +167,7 @@ class CorsRequestListenerTest extends TestCase
 
         $request->getHeaders()->addHeaderLine('Origin', 'http://unauthorized-domain.com');
 
-        $this->corsOptions->setAllowedOriginsRegex('|http://(\w*.)?example\.com|');
+        $this->corsOptions->setAllowedOriginsRegex('|http://(\w+\.)?example\.com|');
 
         $mvcEvent->setRequest($request)
                  ->setResponse($response);
