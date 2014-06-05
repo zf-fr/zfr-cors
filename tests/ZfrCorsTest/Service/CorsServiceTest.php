@@ -69,12 +69,13 @@ class CorsServiceTest extends TestCase
 
         $this->corsOptions = new CorsOptions(
             array(
-                'allowed_origins'     => array('http://example.com'),
-                'allowed_methods'     => array('GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'),
-                'allowed_headers'     => array('Content-Type', 'Accept'),
-                'exposed_headers'     => array('Location'),
-                'max_age'             => 10,
-                'allowed_credentials' => true,
+                'allowed_origins'       => array('http://example.com'),
+                'allowed_origins_regex' => '|http://(\w+\.)?examples\.com|',
+                'allowed_methods'       => array('GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'),
+                'allowed_headers'       => array('Content-Type', 'Accept'),
+                'exposed_headers'       => array('Location'),
+                'max_age'               => 10,
+                'allowed_credentials'   => true,
             )
         );
 
@@ -189,6 +190,21 @@ class CorsServiceTest extends TestCase
         $this->assertEquals('Location', $headers->get('Access-Control-Expose-Headers')->getFieldValue());
     }
 
+    public function testCanPopulateRegexCorsRequest()
+    {
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://wildcard.examples.com');
+
+        $this->corsService->populateCorsResponse($request, $response);
+
+        $headers = $response->getHeaders();
+
+        $this->assertEquals('http://wildcard.examples.com', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+        $this->assertEquals('Location', $headers->get('Access-Control-Expose-Headers')->getFieldValue());
+    }
+
     public function testRefuseNormalCorsRequestIfUnauthorized()
     {
         $request  = new HttpRequest();
@@ -254,11 +270,27 @@ class CorsServiceTest extends TestCase
         $this->assertTrue($this->corsService->isCorsRequest($request));
     }
 
+    public function testCanDetectRegexCorsRequestFromSameHostButDifferentPort()
+    {
+        $request = new HttpRequest();
+        $request->setUri('http://wildcard.examples.com');
+        $request->getHeaders()->addHeaderLine('Origin', 'http://wildcard.examples.com:9000');
+        $this->assertTrue($this->corsService->isCorsRequest($request));
+    }
+
     public function testCanDetectCorsRequestFromSameHostButDifferentScheme()
     {
         $request = new HttpRequest();
         $request->setUri('https://example.com');
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+        $this->assertTrue($this->corsService->isCorsRequest($request));
+    }
+
+    public function testCanDetectRegexCorsRequestFromSameHostButDifferentScheme()
+    {
+        $request = new HttpRequest();
+        $request->setUri('https://wildcard.examples.com');
+        $request->getHeaders()->addHeaderLine('Origin', 'http://wildcard.examples.com');
         $this->assertTrue($this->corsService->isCorsRequest($request));
     }
 }

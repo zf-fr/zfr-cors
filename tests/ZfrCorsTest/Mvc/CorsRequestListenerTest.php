@@ -117,6 +117,26 @@ class CorsRequestListenerTest extends TestCase
                  ->setResponse($response);
 
         $this->assertNull($this->corsListener->onCorsRequest($mvcEvent));
+        $newResponse = $mvcEvent->getResponse();
+        $this->assertEquals(200, $newResponse->getStatusCode());
+    }
+
+    public function testReturnNothingForRegexAuthorizedCorsRequest()
+    {
+        $mvcEvent = new MvcEvent();
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://wildcard.examples.com');
+
+        $this->corsOptions->setAllowedOriginsRegex('|http://(\w+\.)?examples\.com|');
+
+        $mvcEvent->setRequest($request)
+                 ->setResponse($response);
+
+        $this->assertNull($this->corsListener->onCorsRequest($mvcEvent));
+        $newResponse = $mvcEvent->getResponse();
+        $this->assertEquals(200, $newResponse->getStatusCode());
     }
 
     public function testReturnUnauthorizedResponseForNormalUnauthorizedCorsRequest()
@@ -126,6 +146,28 @@ class CorsRequestListenerTest extends TestCase
         $response = new HttpResponse();
 
         $request->getHeaders()->addHeaderLine('Origin', 'http://unauthorized-domain.com');
+
+        $mvcEvent->setRequest($request)
+                 ->setResponse($response);
+
+        $this->corsListener->onCorsRequest($mvcEvent);
+
+        // NOTE: a new response is created for security purpose
+        $newResponse = $mvcEvent->getResponse();
+        $this->assertNotEquals($response, $newResponse);
+        $this->assertEquals(403, $newResponse->getStatusCode());
+        $this->assertEquals('', $newResponse->getContent());
+    }
+
+    public function testReturnUnauthorizedForRegexUnauthorizedCorsRequest()
+    {
+        $mvcEvent = new MvcEvent();
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://unauthorized-domain.com');
+
+        $this->corsOptions->setAllowedOriginsRegex('|http://(\w+\.)?example\.com|');
 
         $mvcEvent->setRequest($request)
                  ->setResponse($response);

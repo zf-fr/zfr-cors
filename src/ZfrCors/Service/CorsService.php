@@ -179,8 +179,20 @@ class CorsService
             return '*';
         }
 
-        if (in_array($request->getHeader('Origin')->getFieldValue(), $allowedOrigins)) {
-            return $request->getHeader('Origin')->getFieldValue();
+        ;
+        //Check against array, list of all exact matches
+        if (!empty($allowedOrigins)) {
+            if (in_array($request->getHeader('Origin')->getFieldValue(), $allowedOrigins)) {
+                return $request->getHeader('Origin')->getFieldValue();
+            }
+        }
+
+        //Check against regex
+        $allowedOriginsRegex = $this->options->getAllowedOriginsRegex();
+        if (!empty($allowedOriginsRegex) && is_string($allowedOriginsRegex)) {
+            if (preg_match($allowedOriginsRegex, $request->getHeader('Origin')->getFieldValue())) {
+                return $request->getHeader('Origin')->getFieldValue();
+            }
         }
 
         return 'null';

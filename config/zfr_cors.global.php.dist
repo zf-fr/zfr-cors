@@ -13,6 +13,11 @@ return array(
          // 'allowed_origins' => array('http://example.com'),
 
          /**
+          * Set allows origins regular expression.
+          */
+         // 'allowed_origins_regex' => '/http://(\w+\.)?example\.com',
+
+         /**
           * Set the list of HTTP verbs.
           */
          // 'allowed_methods' => array('GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'),

@@ -56,6 +56,9 @@ As of now, all the various options are set globally for all routes:
    multiple origins are specified, ZfrCors will automatically check the `"Origin"` header's value, and only return the
    allowed domain (if any) in the `"Allow-Access-Control-Origin"` response header. Please note that you don't need to
    add your host URI (so if your website is hosted as "example.com", "example.com" is automatically allowed.
+ * `allowed_origins_regex`: (string) Regular expression to match against `"Origin"` header value using `preg_match`. 
+   ZfrCors will automatically check the `"Origin"` header's value, and only return matched domain in the 
+   `"Allow-Access-Control-Origin"` response header.
  * `allowed_methods`: (array) List of allowed HTTP methods. Those methods will be returned for the preflight request to
    indicate which methods are allowed to the user agent. You can even specify custom HTTP verbs.
  * `allowed_headers`: (array) List of allowed headers that will be returned for the preflight request. This indicates
