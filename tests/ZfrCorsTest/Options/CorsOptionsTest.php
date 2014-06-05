@@ -35,7 +35,8 @@ class CorsOptionsTest extends TestCase
     {
         $options = new CorsOptions();
 
-        $this->assertEquals(array(), $options->getAllowedOrigins(), 'No origin are allowed');
+        $this->assertEquals(array(), $options->getAllowedOrigins(), 'No origin are allowed by array');
+        $this->assertEquals("", $options->getAllowedOriginsRegex(), 'No origins are allowed by regex');
         $this->assertEquals(array(), $options->getAllowedMethods(), 'No methods are allowed');
         $this->assertEquals(array(), $options->getAllowedHeaders(), 'No headers are allowed');
         $this->assertEquals(0, $options->getMaxAge(), 'Preflight request cannot be cached');
@@ -49,6 +50,9 @@ class CorsOptionsTest extends TestCase
 
         $options->setAllowedOrigins(array('http://example1.com', 'http://example2.com'));
         $this->assertEquals(array('http://example1.com', 'http://example2.com'), $options->getAllowedOrigins());
+
+        $options->setAllowedOriginsRegex('|http://(\w*.)?example.com|');
+        $this->assertEquals('|http://(\w*.)?example.com|', $options->getAllowedOriginsRegex());
 
         $options->setAllowedMethods(array('POST', 'GET'));
         $this->assertEquals(array('POST', 'GET'), $options->getAllowedMethods());

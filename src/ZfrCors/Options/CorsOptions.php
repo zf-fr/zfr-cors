@@ -36,6 +36,13 @@ class CorsOptions extends AbstractOptions
     protected $allowedOrigins = array();
 
     /**
+     * Set allows origins regular expression.
+     *
+     * @var array
+     */
+    protected $allowedOriginsRegex = "";
+
+    /**
      * Set the list of HTTP verbs.
      *
      * @var array
@@ -85,6 +92,23 @@ class CorsOptions extends AbstractOptions
     public function getAllowedOrigins()
     {
         return $this->allowedOrigins;
+    }
+
+    /**
+     * @param  string $allowedOriginsRegex
+     * @return void
+     */
+    public function setAllowedOriginsRegex($allowedOriginsRegex)
+    {
+        $this->allowedOriginsRegex = $allowedOriginsRegex;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAllowedOriginsRegex()
+    {
+        return $this->allowedOriginsRegex;
     }
 
     /**
