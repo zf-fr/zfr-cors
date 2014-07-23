@@ -1,5 +1,4 @@
 <?php
-
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -33,8 +32,8 @@ use Zend\Http\Response as HttpResponse;
  * @license MIT
  * @author  Florent Blaison <florent.blaison@gmail.com>
  */
-class CorsService {
-
+class CorsService
+{
     /**
      * @var CorsOptions
      */
@@ -43,7 +42,8 @@ class CorsService {
     /**
      * @param CorsOptions $options
      */
-    public function __construct(CorsOptions $options) {
+    public function __construct(CorsOptions $options)
+    {
         $this->options = $options;
     }
 
@@ -54,20 +54,23 @@ class CorsService {
      * @param  HttpRequest $request
      * @return bool
      */
-    public function isCorsRequest(HttpRequest $request) {
+    public function isCorsRequest(HttpRequest $request)
+    {
         $headers = $request->getHeaders();
 
         if (!$headers->has('Origin')) {
             return false;
         }
 
-        $originUri = UriFactory::factory($headers->get('Origin')->getFieldValue());
+        $originUri  = UriFactory::factory($headers->get('Origin')->getFieldValue());
         $requestUri = $request->getUri();
 
         // According to the spec (http://tools.ietf.org/html/rfc6454#section-4), we should check host, port and scheme
 
-        return (!($originUri->getHost() === $requestUri->getHost()) || !($originUri->getPort() === $requestUri->getPort()) || !($originUri->getScheme() === $requestUri->getScheme())
-                );
+        return (!($originUri->getHost() === $requestUri->getHost())
+            || !($originUri->getPort() === $requestUri->getPort())
+            || !($originUri->getScheme() === $requestUri->getScheme())
+        );
     }
 
     /**
@@ -76,8 +79,11 @@ class CorsService {
      * @param  HttpRequest $request
      * @return bool
      */
-    public function isPreflightRequest(HttpRequest $request) {
-        return $this->isCorsRequest($request) && strtoupper($request->getMethod()) === 'OPTIONS' && $request->getHeaders()->has('Access-Control-Request-Method');
+    public function isPreflightRequest(HttpRequest $request)
+    {
+        return $this->isCorsRequest($request)
+            && strtoupper($request->getMethod()) === 'OPTIONS'
+            && $request->getHeaders()->has('Access-Control-Request-Method');
     }
 
     /**
@@ -86,7 +92,8 @@ class CorsService {
      * @param  HttpRequest  $request
      * @return HttpResponse
      */
-    public function createPreflightCorsResponse(HttpRequest $request) {
+    public function createPreflightCorsResponse(HttpRequest $request)
+    {
         $response = new HttpResponse();
         $response->setStatusCode(200);
 
@@ -113,7 +120,8 @@ class CorsService {
      * @return HttpResponse
      * @throws DisallowedOriginException If the origin is not allowed
      */
-    public function populateCorsResponse(HttpRequest $request, HttpResponse $response) {
+    public function populateCorsResponse(HttpRequest $request, HttpResponse $response)
+    {
         $origin = $this->getAllowedOriginValue($request);
 
         // If $origin is "null", then it means than the origin is not allowed. As this is
@@ -121,9 +129,10 @@ class CorsService {
         // by the browser anyway, so we throw an exception
         if ($origin === 'null') {
             throw new DisallowedOriginException(
-            sprintf(
-                    'The origin "%s" is not authorized', $request->getHeader('Origin')->getFieldValue()
-            )
+                sprintf(
+                    'The origin "%s" is not authorized',
+                    $request->getHeader('Origin')->getFieldValue()
+                )
             );
         }
 
@@ -136,7 +145,7 @@ class CorsService {
         if ($origin !== '*') {
             if ($headers->has('Vary')) {
                 $varyHeader = $headers->get('Vary');
-                $varyValue = $varyHeader->getFieldValue() . ', Origin';
+                $varyValue  = $varyHeader->getFieldValue() . ', Origin';
 
                 $headers->removeHeader($varyHeader);
                 $headers->addHeaderLine('Vary', $varyValue);
@@ -162,7 +171,8 @@ class CorsService {
      * @param  HttpRequest $request
      * @return string
      */
-    protected function getAllowedOriginValue(HttpRequest $request) {
+    protected function getAllowedOriginValue(HttpRequest $request)
+    {
         $allowedOrigins = $this->options->getAllowedOrigins();
 
         if (in_array('*', $allowedOrigins)) {
@@ -178,5 +188,4 @@ class CorsService {
 
         return 'null';
     }
-
 }
