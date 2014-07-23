@@ -12,4 +12,3 @@ vendor/
 build/
 composer.lock
 composer.phar
-/nbproject/private/
