@@ -162,6 +162,68 @@ class CorsServiceTest extends TestCase
         $headers = $response->getHeaders();
         $this->assertEquals('*', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
     }
+    
+    public function testCanReturnWildCardSubDomainAllowOrigin()
+    {
+        $request  = new HttpRequest();
+        $request->getHeaders()->addHeaderLine('Origin', 'http://subdomain.example.com');
+        $this->corsOptions->setAllowedOrigins(array('*.example.com'));
+
+        $response = $this->corsService->createPreflightCorsResponse($request);
+
+        $headers = $response->getHeaders();
+        $headerValue = $headers->get('Access-Control-Allow-Origin')->getFieldValue();
+        $this->assertEquals('http://subdomain.example.com', $headerValue);
+    }
+    
+    public function testCanReturnWildCardSubDomainWithSchemeAllowOrigin()
+    {
+        $request  = new HttpRequest();
+        $request->getHeaders()->addHeaderLine('Origin', 'https://subdomain.example.com');
+        $this->corsOptions->setAllowedOrigins(array('https://*.example.com'));
+
+        $response = $this->corsService->createPreflightCorsResponse($request);
+
+        $headers = $response->getHeaders();
+        $headerValue = $headers->get('Access-Control-Allow-Origin')->getFieldValue();
+        $this->assertEquals('https://subdomain.example.com', $headerValue);
+    }
+    
+    public function testReturnNullForMissMatchedWildcardSubDomainOrigin()
+    {
+        $request  = new HttpRequest();
+        $request->getHeaders()->addHeaderLine('Origin', 'http://subdomain.example.org');
+        $this->corsOptions->setAllowedOrigins(array('*.example.com'));
+
+        $response = $this->corsService->createPreflightCorsResponse($request);
+
+        $headers = $response->getHeaders();
+        $this->assertEquals('null', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+    }
+    
+    public function testReturnNullForRootDomainOnWildcardSubDomainOrigin()
+    {
+        $request  = new HttpRequest();
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+        $this->corsOptions->setAllowedOrigins(array('*.example.com'));
+
+        $response = $this->corsService->createPreflightCorsResponse($request);
+
+        $headers = $response->getHeaders();
+        $this->assertEquals('null', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+    }
+    
+    public function testReturnNullForDifferentSchemeOnWildcardSubDomainOrigin()
+    {
+        $request  = new HttpRequest();
+        $request->getHeaders()->addHeaderLine('Origin', 'https://example.com');
+        $this->corsOptions->setAllowedOrigins(array('http://*.example.com'));
+
+        $response = $this->corsService->createPreflightCorsResponse($request);
+
+        $headers = $response->getHeaders();
+        $this->assertEquals('null', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+    }
 
     public function testReturnNullForUnknownOrigin()
     {
