@@ -322,5 +322,5 @@ class CorsServiceTest extends TestCase
         $request->setUri('https://example.com');
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
         $this->assertTrue($this->corsService->isCorsRequest($request));
-    }  
+    }
 }
