@@ -172,7 +172,21 @@ class CorsServiceTest extends TestCase
         $response = $this->corsService->createPreflightCorsResponse($request);
 
         $headers = $response->getHeaders();
-        $this->assertEquals('http://subdomain.example.com', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+        $headerValue = $headers->get('Access-Control-Allow-Origin')->getFieldValue();
+        $this->assertEquals('http://subdomain.example.com', $headerValue);
+    }
+    
+    public function testCanReturnWildCardSubDomainWithSchemeAllowOrigin()
+    {
+        $request  = new HttpRequest();
+        $request->getHeaders()->addHeaderLine('Origin', 'https://subdomain.example.com');
+        $this->corsOptions->setAllowedOrigins(array('https://*.example.com'));
+
+        $response = $this->corsService->createPreflightCorsResponse($request);
+
+        $headers = $response->getHeaders();
+        $headerValue = $headers->get('Access-Control-Allow-Origin')->getFieldValue();
+        $this->assertEquals('https://subdomain.example.com', $headerValue);
     }
     
     public function testReturnNullForMissMatchedWildcardSubDomainOrigin()
@@ -192,6 +206,18 @@ class CorsServiceTest extends TestCase
         $request  = new HttpRequest();
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
         $this->corsOptions->setAllowedOrigins(array('*.example.com'));
+
+        $response = $this->corsService->createPreflightCorsResponse($request);
+
+        $headers = $response->getHeaders();
+        $this->assertEquals('null', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+    }
+    
+    public function testReturnNullForDifferentSchemeOnWildcardSubDomainOrigin()
+    {
+        $request  = new HttpRequest();
+        $request->getHeaders()->addHeaderLine('Origin', 'https://example.com');
+        $this->corsOptions->setAllowedOrigins(array('http://*.example.com'));
 
         $response = $this->corsService->createPreflightCorsResponse($request);
 
@@ -296,6 +322,5 @@ class CorsServiceTest extends TestCase
         $request->setUri('https://example.com');
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
         $this->assertTrue($this->corsService->isCorsRequest($request));
-    }
-    
+    }  
 }
