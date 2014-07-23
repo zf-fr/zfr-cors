@@ -162,6 +162,42 @@ class CorsServiceTest extends TestCase
         $headers = $response->getHeaders();
         $this->assertEquals('*', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
     }
+    
+    public function testCanReturnWildCardSubDomainAllowOrigin()
+    {
+        $request  = new HttpRequest();
+        $request->getHeaders()->addHeaderLine('Origin', 'http://subdomain.example.com');
+        $this->corsOptions->setAllowedOrigins(array('*.example.com'));
+
+        $response = $this->corsService->createPreflightCorsResponse($request);
+
+        $headers = $response->getHeaders();
+        $this->assertEquals('http://subdomain.example.com', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+    }
+    
+    public function testReturnNullForMissMatchedWildcardSubDomainOrigin()
+    {
+        $request  = new HttpRequest();
+        $request->getHeaders()->addHeaderLine('Origin', 'http://subdomain.example.org');
+        $this->corsOptions->setAllowedOrigins(array('*.example.com'));
+
+        $response = $this->corsService->createPreflightCorsResponse($request);
+
+        $headers = $response->getHeaders();
+        $this->assertEquals('null', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+    }
+    
+    public function testReturnNullForRootDomainOnWildcardSubDomainOrigin()
+    {
+        $request  = new HttpRequest();
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+        $this->corsOptions->setAllowedOrigins(array('*.example.com'));
+
+        $response = $this->corsService->createPreflightCorsResponse($request);
+
+        $headers = $response->getHeaders();
+        $this->assertEquals('null', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+    }
 
     public function testReturnNullForUnknownOrigin()
     {
@@ -261,4 +297,5 @@ class CorsServiceTest extends TestCase
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
         $this->assertTrue($this->corsService->isCorsRequest($request));
     }
+    
 }
