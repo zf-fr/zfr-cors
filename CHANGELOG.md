@@ -1,3 +1,8 @@
+# 1.2.0
+
+- You can now use the wildcard character for allowing domains. You can now use "https://*.example.com" rather
+that manually specifying all subdomains.
+
 # 1.1.2
 
 - ZfrCors now properly detects a CORS request if the scheme is different.
