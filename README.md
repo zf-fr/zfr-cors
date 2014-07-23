@@ -54,7 +54,7 @@ As of now, all the various options are set globally for all routes:
 
  * `allowed_origins`: (array) List of allowed origins. To allow any origin, you can use the wildcard (`*`) character. If
    multiple origins are specified, ZfrCors will automatically check the `"Origin"` header's value, and only return the
-   allowed domain (if any) in the `"Allow-Access-Control-Origin"` response header. To allow any sub-domain, use can prefix 
+   allowed domain (if any) in the `"Allow-Access-Control-Origin"` response header. To allow any sub-domain, you can prefix 
    the domain with the wildcard character (i.e. *.example.com). Please note that you don't need to
    add your host URI (so if your website is hosted as "example.com", "example.com" is automatically allowed.
  * `allowed_methods`: (array) List of allowed HTTP methods. Those methods will be returned for the preflight request to
