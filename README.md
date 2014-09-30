@@ -97,4 +97,19 @@ ZfrCors only allows to accept or refuse a cross-origin request.
 
 Internally, ZfrCors uses `Zend\Uri\UriFactory` class. If you are using custom schemes (for instance if you are
 testing your API with some Google Chrome extensions), you need to add support for those schemes by adding them to
-the `UriFactory` config (please [refer to the doc](http://framework.zend.com/manual/2.2/en/modules/zend.uri.html#creating-a-new-custom-class-uri).
+the `UriFactory` config (please [refer to the doc](http://framework.zend.com/manual/2.2/en/modules/zend.uri.html#creating-a-new-custom-class-uri)).
+
+### Example
+To register the `chrome-extension` custom scheme in your API, simply add:
+
+```php
+UriFactory::registerScheme('chrome-extension', 'Zend\Uri\Uri');
+```
+
+to the `onBootstrap()` method in `module/Application/Module.php`. Do note that, if your IDE doesn't resolve this automatically, you should add the following `use` definition to the same file: 
+
+```php
+use Zend\Uri\UriFactory;
+```
+
+Registering the `chrome-extension` custom scheme like this allows you to use Google Chrome extensions for testing your API.
