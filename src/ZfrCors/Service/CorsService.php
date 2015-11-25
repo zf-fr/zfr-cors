@@ -142,11 +142,13 @@ class CorsService
         $headers->addHeaderLine('Access-Control-Allow-Origin', $origin);
         $headers->addHeaderLine('Access-Control-Expose-Headers', implode(', ', $this->options->getExposedHeaders()));
 
-        $this->ensureVaryHeader($response);
+        $headers = $this->ensureVaryHeader($response);
 
         if ($this->options->getAllowedCredentials()) {
             $headers->addHeaderLine('Access-Control-Allow-Credentials', 'true');
         }
+
+        $response->setHeaders($headers);
 
         return $response;
     }
@@ -189,6 +191,7 @@ class CorsService
      *
      * @link http://www.w3.org/TR/cors/#resource-implementation
      * @param HttpResponse $response
+     * @return \Zend\Http\Headers
      */
     public function ensureVaryHeader(HttpResponse $response)
     {
@@ -198,7 +201,7 @@ class CorsService
         $allowedOrigins = $this->options->getAllowedOrigins();
 
         if (in_array('*', $allowedOrigins)) {
-            return;
+            return $headers;
         }
         if ($headers->has('Vary')) {
             $varyHeader = $headers->get('Vary');
@@ -209,5 +212,7 @@ class CorsService
         } else {
             $headers->addHeaderLine('Vary', 'Origin');
         }
+
+        return $headers;
     }
 }

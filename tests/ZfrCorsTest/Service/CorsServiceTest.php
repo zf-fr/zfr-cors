@@ -241,9 +241,13 @@ class CorsServiceTest extends TestCase
         $request  = new HttpRequest();
         $response = new HttpResponse();
 
-        $this->corsService->populateCorsResponse($request, $response);
+        if (!$this->corsService->isCorsRequest($request)) {
+            if (!$request->getHeader("Origin")) {
+                $this->corsService->ensureVaryHeader($response);
+            }
+        }
 
-        $headers = $request->getHeaders();
+        $headers = $response->getHeaders();
 
         $this->assertEquals(false, $headers->get('Origin'));
         $this->assertNotEquals(false, $headers->get('Vary'));
