@@ -128,10 +128,12 @@ class CorsService
         // a simple request, it is useless to continue the processing as it will be refused
         // by the browser anyway, so we throw an exception
         if ($origin === 'null') {
+            $origin = $request->getHeader('Origin');
+            $originHeader = $origin ? $origin->getFieldValue() : '';
             throw new DisallowedOriginException(
                 sprintf(
                     'The origin "%s" is not authorized',
-                    $request->getHeader('Origin')->getFieldValue()
+                    $originHeader
                 )
             );
         }
