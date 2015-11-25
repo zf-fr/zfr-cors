@@ -167,10 +167,14 @@ class CorsService
             return '*';
         }
 
-        $origin = $request->getHeader('Origin')->getFieldValue();
-        foreach ($allowedOrigins as $allowedOrigin) {
-            if (fnmatch($allowedOrigin, $origin)) {
-                return $origin;
+        $origin = $request->getHeader('Origin');
+
+        if ($origin) {
+            $origin = $origin->getFieldValue();
+            foreach ($allowedOrigins as $allowedOrigin) {
+                if (fnmatch($allowedOrigin, $origin)) {
+                    return $origin;
+                }
             }
         }
 
