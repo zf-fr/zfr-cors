@@ -112,7 +112,18 @@ class CorsRequestListener extends AbstractListenerAggregate
         /** @var $response HttpResponse */
         $response = $event->getResponse();
 
-        if (!$request instanceof HttpRequest || !$this->corsService->isCorsRequest($request)) {
+
+        if (!$request instanceof HttpRequest) {
+            return;
+        }
+
+        // Also ensure that the vary header is set when no origin is set
+        // to prevent reverse proxy caching a wrong request; causing all of the following
+        // requests to fail due to missing CORS headers.
+        if (!$this->corsService->isCorsRequest($request)) {
+            if (!$request->getHeader("Origin")) {
+                $this->corsService->ensureVaryHeader($response);
+            }
             return;
         }
 

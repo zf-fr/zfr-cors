@@ -128,10 +128,12 @@ class CorsService
         // a simple request, it is useless to continue the processing as it will be refused
         // by the browser anyway, so we throw an exception
         if ($origin === 'null') {
+            $origin = $request->getHeader('Origin');
+            $originHeader = $origin ? $origin->getFieldValue() : '';
             throw new DisallowedOriginException(
                 sprintf(
                     'The origin "%s" is not authorized',
-                    $request->getHeader('Origin')->getFieldValue()
+                    $originHeader
                 )
             );
         }
@@ -140,19 +142,7 @@ class CorsService
         $headers->addHeaderLine('Access-Control-Allow-Origin', $origin);
         $headers->addHeaderLine('Access-Control-Expose-Headers', implode(', ', $this->options->getExposedHeaders()));
 
-        // If the origin is not "*", we should add the "Origin" value to the "Vary" header
-        // See more: http://www.w3.org/TR/cors/#resource-implementation
-        if ($origin !== '*') {
-            if ($headers->has('Vary')) {
-                $varyHeader = $headers->get('Vary');
-                $varyValue  = $varyHeader->getFieldValue() . ', Origin';
-
-                $headers->removeHeader($varyHeader);
-                $headers->addHeaderLine('Vary', $varyValue);
-            } else {
-                $headers->addHeaderLine('Vary', 'Origin');
-            }
-        }
+        $this->ensureVaryHeader($response);
 
         if ($this->options->getAllowedCredentials()) {
             $headers->addHeaderLine('Access-Control-Allow-Credentials', 'true');
@@ -179,13 +169,45 @@ class CorsService
             return '*';
         }
 
-        $origin = $request->getHeader('Origin')->getFieldValue();
-        foreach ($allowedOrigins as $allowedOrigin) {
-            if (fnmatch($allowedOrigin, $origin)) {
-                return $origin;
+        $origin = $request->getHeader('Origin');
+
+        if ($origin) {
+            $origin = $origin->getFieldValue();
+            foreach ($allowedOrigins as $allowedOrigin) {
+                if (fnmatch($allowedOrigin, $origin)) {
+                    return $origin;
+                }
             }
         }
 
         return 'null';
+    }
+
+    /**
+     * Ensure that the Vary header is set.
+     *
+     *
+     * @link http://www.w3.org/TR/cors/#resource-implementation
+     * @param HttpResponse $response
+     */
+    public function ensureVaryHeader(HttpResponse $response)
+    {
+        $headers = $response->getHeaders();
+        // If the origin is not "*", we should add the "Origin" value to the "Vary" header
+        // See more: http://www.w3.org/TR/cors/#resource-implementation
+        $allowedOrigins = $this->options->getAllowedOrigins();
+
+        if (in_array('*', $allowedOrigins)) {
+            return;
+        }
+        if ($headers->has('Vary')) {
+            $varyHeader = $headers->get('Vary');
+            $varyValue  = $varyHeader->getFieldValue() . ', Origin';
+
+            $headers->removeHeader($varyHeader);
+            $headers->addHeaderLine('Vary', $varyValue);
+        } else {
+            $headers->addHeaderLine('Vary', 'Origin');
+        }
     }
 }
