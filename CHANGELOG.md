@@ -1,3 +1,7 @@
+# 1.2.1
+
+- Ensure that the vary header is set when no origin is set [#31]
+
 # 1.2.0
 
 - You can now use the wildcard character for allowing domains. You can now use "https://*.example.com" rather
