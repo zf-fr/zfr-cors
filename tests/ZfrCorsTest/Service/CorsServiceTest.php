@@ -236,6 +236,18 @@ class CorsServiceTest extends TestCase
         $this->assertEquals('null', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
     }
 
+    public function testEnsureVaryHeaderForNoOrigin()
+    {
+        $response = new HttpResponse();
+
+        $this->corsService->ensureVaryHeader($response);
+
+        $headers = $response->getHeaders();
+
+        $this->assertEquals(false, $headers->get('Origin'));
+        $this->assertNotEquals(false, $headers->get('Vary'));
+    }
+
     public function testCanPopulateNormalCorsRequest()
     {
         $request  = new HttpRequest();
