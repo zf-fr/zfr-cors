@@ -121,7 +121,7 @@ class CorsRequestListener extends AbstractListenerAggregate
         // to prevent reverse proxy caching a wrong request; causing all of the following
         // requests to fail due to missing CORS headers.
         if (!$this->corsService->isCorsRequest($request)) {
-            if (!$request->getHeader("Origin")) {
+            if (!$request->getHeader('Origin')) {
                 $this->corsService->ensureVaryHeader($response);
             }
             return;

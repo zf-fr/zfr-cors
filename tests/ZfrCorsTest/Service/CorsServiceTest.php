@@ -238,14 +238,9 @@ class CorsServiceTest extends TestCase
 
     public function testEnsureVaryHeaderForNoOrigin()
     {
-        $request  = new HttpRequest();
         $response = new HttpResponse();
 
-        if (!$this->corsService->isCorsRequest($request)) {
-            if (!$request->getHeader("Origin")) {
-                $this->corsService->ensureVaryHeader($response);
-            }
-        }
+        $this->corsService->ensureVaryHeader($response);
 
         $headers = $response->getHeaders();
 
