@@ -62,11 +62,12 @@ abstract class ServiceManagerFactory
     public static function getServiceManager(array $config = null)
     {
         $config = $config ?: static::getApplicationConfig();
-        $serviceManager = new ServiceManager(
-            new ServiceManagerConfig(
-                isset($config['service_manager']) ? $config['service_manager'] : array()
-            )
+        $serviceManager = new ServiceManager();
+        $serviceManagerConfig = new ServiceManagerConfig(
+            isset($config['service_manager']) ? $config['service_manager'] : array()
         );
+        $serviceManagerConfig->configureServiceManager($serviceManager);
+
         $serviceManager->setService('ApplicationConfig', $config);
 
         /* @var $moduleManager \Zend\ModuleManager\ModuleManagerInterface */
