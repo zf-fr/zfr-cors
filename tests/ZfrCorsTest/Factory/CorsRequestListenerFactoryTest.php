@@ -39,4 +39,13 @@ class CorsRequestListenerFactoryTest extends TestCase
 
         $this->assertInstanceOf('ZfrCors\Mvc\CorsRequestListener', $listener);
     }
+
+    public function testCanCreateCorsRequestListenerWithServiceManagerV2()
+    {
+        $serviceManager = ServiceManagerFactory::getServiceManager();
+        $factory        = new \ZfrCors\Factory\CorsRequestListenerFactory();
+        $listener        = $factory->createService($serviceManager);
+
+        $this->assertInstanceOf('ZfrCors\Mvc\CorsRequestListener', $listener);
+    }
 }

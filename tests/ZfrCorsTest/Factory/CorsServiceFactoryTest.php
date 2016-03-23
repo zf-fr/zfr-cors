@@ -39,4 +39,13 @@ class CorsServiceFactoryTest extends TestCase
 
         $this->assertInstanceOf('ZfrCors\Service\CorsService', $service);
     }
+
+    public function testCanCreateCorsServiceWithServiceManagerV2()
+    {
+        $serviceManager = ServiceManagerFactory::getServiceManager();
+        $factory        = new \ZfrCors\Factory\CorsServiceFactory();
+        $service        = $factory->createService($serviceManager);
+
+        $this->assertInstanceOf('ZfrCors\Service\CorsService', $service);
+    }
 }
