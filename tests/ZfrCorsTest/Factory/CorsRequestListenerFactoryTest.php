@@ -19,7 +19,6 @@
 namespace ZfrCorsTest\Factory;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use Zend\ServiceManager\ServiceManager;
 use ZfrCorsTest\Util\ServiceManagerFactory;
 
 /**
@@ -36,15 +35,6 @@ class CorsRequestListenerFactoryTest extends TestCase
     {
         $serviceManager = ServiceManagerFactory::getServiceManager();
         $listener       = $serviceManager->get('ZfrCors\Mvc\CorsRequestListener');
-
-        $this->assertInstanceOf('ZfrCors\Mvc\CorsRequestListener', $listener);
-    }
-
-    public function testCanCreateCorsRequestListenerWithServiceManagerV2()
-    {
-        $serviceManager = ServiceManagerFactory::getServiceManager();
-        $factory        = new \ZfrCors\Factory\CorsRequestListenerFactory();
-        $listener        = $factory->createService($serviceManager);
 
         $this->assertInstanceOf('ZfrCors\Mvc\CorsRequestListener', $listener);
     }

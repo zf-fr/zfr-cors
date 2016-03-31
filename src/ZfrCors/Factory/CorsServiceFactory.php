@@ -19,8 +19,6 @@
 namespace ZfrCors\Factory;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 use ZfrCors\Options\CorsOptions;
 use ZfrCors\Service\CorsService;
 
@@ -30,26 +28,18 @@ use ZfrCors\Service\CorsService;
  * @license MIT
  * @author  Florent Blaison <florent.blaison@gmail.com>
  */
-class CorsServiceFactory implements FactoryInterface
+class CorsServiceFactory
 {
-    /**
-     * {@inheritDoc}
-     * @return CorsService
-     */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
-    {
-        /* @var $corsOptions CorsOptions */
-        $corsOptions = $container->get('ZfrCors\Options\CorsOptions');
-
-        return new CorsService($corsOptions);
-    }
     /**
      * {@inheritDoc}
      *
      * @return CorsService
      */
-    public function createService(ServiceLocatorInterface $container)
+    public function __invoke(ContainerInterface $container, $requestedName, $options = null)
     {
-        return $this($container, CorsOptions::class);
+        /* @var $corsOptions CorsOptions */
+        $corsOptions = $container->get('ZfrCors\Options\CorsOptions');
+
+        return new CorsService($corsOptions);
     }
 }
