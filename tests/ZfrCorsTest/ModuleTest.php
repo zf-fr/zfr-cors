@@ -19,9 +19,6 @@
 namespace ZfrCorsTest;
 
 use PHPUnit_Framework_TestCase;
-use Zend\Mvc\Application;
-use Zend\Mvc\MvcEvent;
-use Zend\ServiceManager\ServiceManager;
 use ZfrCors\Module;
 
 /**
@@ -66,7 +63,7 @@ class ModuleTest extends PHPUnit_Framework_TestCase
             ->with('ZfrCors\Mvc\CorsRequestListener')
             ->will($this->returnValue($corsListener));
 
-        $eventManager->expects($this->once())->method('attach')->with($corsListener);
+        $corsListener->expects($this->once())->method('attach')->with($eventManager);
 
         $module->onBootstrap($mvcEvent);
     }
