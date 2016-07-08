@@ -1,3 +1,7 @@
+# 1.3.0
+
+- Provides compatibility with ZF3 components (especially ServiceManager v3 and EventManager v3) [#37]
+
 # 1.2.1
 
 - Ensure that the vary header is set when no origin is set [#31]
