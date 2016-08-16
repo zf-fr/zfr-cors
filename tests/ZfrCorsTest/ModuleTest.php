@@ -49,10 +49,10 @@ class ModuleTest extends PHPUnit_Framework_TestCase
     {
         $module         = new Module();
         $mvcEvent       = $this->getMock('Zend\Mvc\MvcEvent');
-        $application    = $this->getMock('Zend\Mvc\Application', array(), array(), '', false);
+        $application    = $this->getMock('Zend\Mvc\Application', [], [], '', false);
         $eventManager   = $this->getMock('Zend\EventManager\EventManagerInterface');
         $serviceManager = $this->getMock('Zend\ServiceManager\ServiceManager');
-        $corsListener   = $this->getMock('ZfrCors\Mvc\CorsRequestListener', array(), array(), '', false);
+        $corsListener   = $this->getMock('ZfrCors\Mvc\CorsRequestListener', [], [], '', false);
 
         $mvcEvent->expects($this->any())->method('getTarget')->will($this->returnValue($application));
         $application->expects($this->any())->method('getEventManager')->will($this->returnValue($eventManager));

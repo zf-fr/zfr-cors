@@ -16,8 +16,8 @@
  * and is licensed under the MIT license.
  */
 
-return array(
-    'zfr_cors' => array(
+return [
+    'zfr_cors' => [
 
-    ),
-);
+    ],
+];

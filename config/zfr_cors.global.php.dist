@@ -5,8 +5,8 @@
  * forget to remove the .dist extension from the file), and configure it as you want
  */
 
-return array(
-    'zfr_cors' => array(
+return [
+    'zfr_cors' => [
          /**
           * Set the list of allowed origins domain with protocol.
           */
@@ -43,5 +43,5 @@ return array(
           * the proper response header.
           */
          // 'allowed_credentials' => false,
-    ),
-);
+    ],
+];

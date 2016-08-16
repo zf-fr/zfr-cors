@@ -111,7 +111,7 @@ class CorsRequestListenerTest extends TestCase
 
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
 
-        $this->corsOptions->setAllowedOrigins(array('http://example.com'));
+        $this->corsOptions->setAllowedOrigins(['http://example.com']);
 
         $mvcEvent->setRequest($request)
                  ->setResponse($response);

@@ -16,14 +16,14 @@
  * and is licensed under the MIT license.
  */
 
-return array(
-    'service_manager' => array(
-        'factories' => array(
+return [
+    'service_manager' => [
+        'factories' => [
             'ZfrCors\Mvc\CorsRequestListener' => 'ZfrCors\Factory\CorsRequestListenerFactory',
             'ZfrCors\Options\CorsOptions'     => 'ZfrCors\Factory\CorsOptionsFactory',
             'ZfrCors\Service\CorsService'     => 'ZfrCors\Factory\CorsServiceFactory',
-        ),
-    ),
+        ],
+    ],
 
-    'zfr_cors' => array(),
-);
+    'zfr_cors' => [],
+];

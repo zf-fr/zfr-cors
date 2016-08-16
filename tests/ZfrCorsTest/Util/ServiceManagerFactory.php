@@ -35,7 +35,7 @@ abstract class ServiceManagerFactory
     /**
      * @var array
      */
-    private static $config = array();
+    private static $config = [];
 
     /**
      * @static
@@ -64,7 +64,7 @@ abstract class ServiceManagerFactory
         $config = $config ?: static::getApplicationConfig();
         $serviceManager = new ServiceManager();
         $serviceManagerConfig = new ServiceManagerConfig(
-            isset($config['service_manager']) ? $config['service_manager'] : array()
+            isset($config['service_manager']) ? $config['service_manager'] : []
         );
         $serviceManagerConfig->configureServiceManager($serviceManager);
 

@@ -60,10 +60,10 @@ class CorsRequestListener extends AbstractListenerAggregate
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         // Preflight can be handled during the route event, and should return early
-        $this->listeners[] = $events->attach(MvcEvent::EVENT_ROUTE, array($this, 'onCorsPreflight'), -1);
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_ROUTE, [$this, 'onCorsPreflight'], -1);
 
         // "in"flight should be handled during "FINISH" to ensure we operate on the actual route being returned
-        $this->listeners[] = $events->attach(MvcEvent::EVENT_FINISH, array($this, 'onCorsRequest'), 100);
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_FINISH, [$this, 'onCorsRequest'], 100);
     }
 
     /**
@@ -80,12 +80,12 @@ class CorsRequestListener extends AbstractListenerAggregate
         /** @var $request HttpRequest */
         $request  = $event->getRequest();
 
-        if (!$request instanceof HttpRequest || !$this->corsService->isCorsRequest($request)) {
+        if (! $request instanceof HttpRequest || ! $this->corsService->isCorsRequest($request)) {
             return;
         }
 
         // If this isn't a preflight, done
-        if (!$this->corsService->isPreflightRequest($request)) {
+        if (! $this->corsService->isPreflightRequest($request)) {
             return;
         }
 
@@ -113,15 +113,15 @@ class CorsRequestListener extends AbstractListenerAggregate
         $response = $event->getResponse();
 
 
-        if (!$request instanceof HttpRequest) {
+        if (! $request instanceof HttpRequest) {
             return;
         }
 
         // Also ensure that the vary header is set when no origin is set
         // to prevent reverse proxy caching a wrong request; causing all of the following
         // requests to fail due to missing CORS headers.
-        if (!$this->corsService->isCorsRequest($request)) {
-            if (!$request->getHeader('Origin')) {
+        if (! $this->corsService->isCorsRequest($request)) {
+            if (! $request->getHeader('Origin')) {
                 $this->corsService->ensureVaryHeader($response);
             }
             return;
