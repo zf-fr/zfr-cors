@@ -17,6 +17,7 @@
  */
 return [
     'modules' => [
+        'Zend\Router',
         'ZfrCors',
     ],
     'module_listener_options' => [
