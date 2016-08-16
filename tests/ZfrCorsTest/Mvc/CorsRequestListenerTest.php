@@ -60,7 +60,7 @@ class CorsRequestListenerTest extends TestCase
 
     public function testAttach()
     {
-        $eventManager = $this->getMock('Zend\EventManager\EventManagerInterface');
+        $eventManager = $this->getMockBuilder('Zend\EventManager\EventManagerInterface')->getMock();
 
         $eventManager
             ->expects($this->at(0))

@@ -48,11 +48,11 @@ class ModuleTest extends PHPUnit_Framework_TestCase
     public function testAssertListenerIsCorrectlyRegistered()
     {
         $module         = new Module();
-        $mvcEvent       = $this->getMock('Zend\Mvc\MvcEvent');
-        $application    = $this->getMock('Zend\Mvc\Application', [], [], '', false);
-        $eventManager   = $this->getMock('Zend\EventManager\EventManagerInterface');
-        $serviceManager = $this->getMock('Zend\ServiceManager\ServiceManager');
-        $corsListener   = $this->getMock('ZfrCors\Mvc\CorsRequestListener', [], [], '', false);
+        $mvcEvent       = $this->getMockBuilder('Zend\Mvc\MvcEvent')->getMock();
+        $application    = $this->getMockBuilder('Zend\Mvc\Application', [], [], '', false)->getMock();
+        $eventManager   = $this->getMockBuilder('Zend\EventManager\EventManagerInterface')->getMock();
+        $serviceManager = $this->getMockBuilder('Zend\ServiceManager\ServiceManager')->getMock();
+        $corsListener   = $this->getMockBuilder('ZfrCors\Mvc\CorsRequestListener', [], [], '', false)->getMock();
 
         $mvcEvent->expects($this->any())->method('getTarget')->will($this->returnValue($application));
         $application->expects($this->any())->method('getEventManager')->will($this->returnValue($eventManager));
