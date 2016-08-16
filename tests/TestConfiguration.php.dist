@@ -15,11 +15,15 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
  */
+
+$modules = ['ZfrCors'];
+
+if (class_exists('Zend\Router\Module')) {
+    array_unshift($modules, 'Zend\Router');
+}
+
 return [
-    'modules' => [
-        'Zend\Router',
-        'ZfrCors',
-    ],
+    'modules' => $modules,
     'module_listener_options' => [
         'config_glob_paths' => [
             __DIR__ . '/testing.config.php',
