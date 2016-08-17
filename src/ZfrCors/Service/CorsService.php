@@ -58,7 +58,7 @@ class CorsService
     {
         $headers = $request->getHeaders();
 
-        if (!$headers->has('Origin')) {
+        if (! $headers->has('Origin')) {
             return false;
         }
 
@@ -67,9 +67,9 @@ class CorsService
 
         // According to the spec (http://tools.ietf.org/html/rfc6454#section-4), we should check host, port and scheme
 
-        return (!($originUri->getHost() === $requestUri->getHost())
-            || !($originUri->getPort() === $requestUri->getPort())
-            || !($originUri->getScheme() === $requestUri->getScheme())
+        return (! ($originUri->getHost() === $requestUri->getHost())
+            || ! ($originUri->getPort() === $requestUri->getPort())
+            || ! ($originUri->getScheme() === $requestUri->getScheme())
         );
     }
 

@@ -60,7 +60,7 @@ class CorsRequestListenerTest extends TestCase
 
     public function testAttach()
     {
-        $eventManager = $this->getMock('Zend\EventManager\EventManagerInterface');
+        $eventManager = $this->getMockBuilder('Zend\EventManager\EventManagerInterface')->getMock();
 
         $eventManager
             ->expects($this->at(0))
@@ -111,7 +111,7 @@ class CorsRequestListenerTest extends TestCase
 
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
 
-        $this->corsOptions->setAllowedOrigins(array('http://example.com'));
+        $this->corsOptions->setAllowedOrigins(['http://example.com']);
 
         $mvcEvent->setRequest($request)
                  ->setResponse($response);

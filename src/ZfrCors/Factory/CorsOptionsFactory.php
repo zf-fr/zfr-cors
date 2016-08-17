@@ -30,15 +30,15 @@ use ZfrCors\Options\CorsOptions;
 class CorsOptionsFactory
 {
     /**
-     * {@inheritDoc}
-     *
+     * @param ContainerInterface $container
      * @return CorsOptions
      */
-    public function __invoke(ContainerInterface $container, $requestedName, $options = null)
+    public function __invoke(ContainerInterface $container)
     {
         /* @var $config array */
-        $config = $container->get('Config');
+        $config = $container->has('config') ? $container->get('config') : [];
+        $config = isset($config['zfr_cors']) ? $config['zfr_cors'] : [];
 
-        return new CorsOptions($config['zfr_cors']);
+        return new CorsOptions($config);
     }
 }

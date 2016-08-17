@@ -35,11 +35,11 @@ class CorsOptionsTest extends TestCase
     {
         $options = new CorsOptions();
 
-        $this->assertEquals(array(), $options->getAllowedOrigins(), 'No origin are allowed');
-        $this->assertEquals(array(), $options->getAllowedMethods(), 'No methods are allowed');
-        $this->assertEquals(array(), $options->getAllowedHeaders(), 'No headers are allowed');
+        $this->assertEquals([], $options->getAllowedOrigins(), 'No origin are allowed');
+        $this->assertEquals([], $options->getAllowedMethods(), 'No methods are allowed');
+        $this->assertEquals([], $options->getAllowedHeaders(), 'No headers are allowed');
         $this->assertEquals(0, $options->getMaxAge(), 'Preflight request cannot be cached');
-        $this->assertEquals(array(), $options->getExposedHeaders(), 'No headers are exposed to the browser');
+        $this->assertEquals([], $options->getExposedHeaders(), 'No headers are exposed to the browser');
         $this->assertFalse($options->getAllowedCredentials(), 'Cookies are not allowed');
     }
 
@@ -47,20 +47,20 @@ class CorsOptionsTest extends TestCase
     {
         $options = new CorsOptions();
 
-        $options->setAllowedOrigins(array('http://example1.com', 'http://example2.com'));
-        $this->assertEquals(array('http://example1.com', 'http://example2.com'), $options->getAllowedOrigins());
+        $options->setAllowedOrigins(['http://example1.com', 'http://example2.com']);
+        $this->assertEquals(['http://example1.com', 'http://example2.com'], $options->getAllowedOrigins());
 
-        $options->setAllowedMethods(array('POST', 'GET'));
-        $this->assertEquals(array('POST', 'GET'), $options->getAllowedMethods());
+        $options->setAllowedMethods(['POST', 'GET']);
+        $this->assertEquals(['POST', 'GET'], $options->getAllowedMethods());
 
-        $options->setAllowedHeaders(array('Content-Type'));
-        $this->assertEquals(array('Content-Type'), $options->getAllowedHeaders());
+        $options->setAllowedHeaders(['Content-Type']);
+        $this->assertEquals(['Content-Type'], $options->getAllowedHeaders());
 
         $options->setMaxAge(30);
         $this->assertEquals(30, $options->getMaxAge());
 
-        $options->setExposedHeaders(array('Location', 'X-Custom-Header'));
-        $this->assertEquals(array('Location', 'X-Custom-Header'), $options->getExposedHeaders());
+        $options->setExposedHeaders(['Location', 'X-Custom-Header']);
+        $this->assertEquals(['Location', 'X-Custom-Header'], $options->getExposedHeaders());
 
         $options->setAllowedCredentials(true);
         $this->assertTrue($options->getAllowedCredentials());
@@ -70,7 +70,7 @@ class CorsOptionsTest extends TestCase
     {
         $options = new CorsOptions();
 
-        $options->setAllowedMethods(array('post', 'GeT'));
-        $this->assertEquals(array('POST', 'GET'), $options->getAllowedMethods());
+        $options->setAllowedMethods(['post', 'GeT']);
+        $this->assertEquals(['POST', 'GET'], $options->getAllowedMethods());
     }
 }
