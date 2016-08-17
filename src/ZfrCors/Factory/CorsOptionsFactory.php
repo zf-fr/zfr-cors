@@ -37,7 +37,7 @@ class CorsOptionsFactory
     public function __invoke(ContainerInterface $container, $requestedName, $options = null)
     {
         /* @var $config array */
-        $config = $container->get('Config');
+        $config = $container->get('config');
 
         return new CorsOptions($config['zfr_cors']);
     }
