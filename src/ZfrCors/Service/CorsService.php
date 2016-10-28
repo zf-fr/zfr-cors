@@ -95,7 +95,7 @@ class CorsService
     public function createPreflightCorsResponse(HttpRequest $request)
     {
         $response = new HttpResponse();
-        $response->setStatusCode(200);
+        $response->setStatusCode(204);
 
         $headers = $response->getHeaders();
 
