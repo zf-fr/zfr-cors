@@ -114,12 +114,14 @@ If you want to configure specific routes, you can add `ZfrCors\Options\CorsOptio
                             ],
                             'may_terminate' => true,
                             'child_routes' => [
-                                'type' => 'segment',
-                                'options' => [
-                                    'route' => ':id',
-                                    // This would only allow origin `http://example.org` to POST this route
-                                    defaults => [
-                                        'allowed_methods' => ['POST'],
+                                'delete' => [
+                                    'type' => 'segment',
+                                    'options' => [
+                                        'route' => ':id',
+                                        // This would only allow origin `http://example.org` to apply DELETE on this route
+                                        defaults => [
+                                            'allowed_methods' => ['DELETE'],
+                                        ],
                                     ],
                                 ],
                             ],
