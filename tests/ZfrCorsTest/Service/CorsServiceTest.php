@@ -376,7 +376,8 @@ class CorsServiceTest extends TestCase
             ],
         ];
 
-        $routeMatch = class_exists(DeprecatedRouteMatch::class) ? new DeprecatedRouteMatch($routeMatchParameters) : new RouteMatch($routeMatchParameters);
+        $routeMatch = class_exists(DeprecatedRouteMatch::class) ? new DeprecatedRouteMatch($routeMatchParameters) :
+            new RouteMatch($routeMatchParameters);
 
         $request = new HttpRequest();
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.org');
@@ -390,7 +391,10 @@ class CorsServiceTest extends TestCase
             'POST, DELETE, OPTIONS',
             $headers->get('Access-Control-Allow-Methods')->getFieldValue()
         );
-        $this->assertEquals('Content-Type, Accept, Cookie', $headers->get('Access-Control-Allow-Headers')->getFieldValue());
+        $this->assertEquals(
+            'Content-Type, Accept, Cookie',
+            $headers->get('Access-Control-Allow-Headers')->getFieldValue()
+        );
         $this->assertEquals(5, $headers->get('Access-Control-Max-Age')->getFieldValue());
         $this->assertEquals(0, $headers->get('Content-Length')->getFieldValue());
 
