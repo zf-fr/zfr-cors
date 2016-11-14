@@ -22,7 +22,8 @@ use PHPUnit_Framework_TestCase as TestCase;
 use Zend\Http\Response as HttpResponse;
 use Zend\Http\Request as HttpRequest;
 use Zend\Mvc\MvcEvent;
-use Zend\Mvc\Router\Http\RouteMatch;
+use Zend\Mvc\Router\Http\RouteMatch as DeprecatedRouteMatch;
+use Zend\Router\Http\RouteMatch;
 use ZfrCors\Options\CorsOptions;
 use ZfrCors\Service\CorsService;
 
@@ -339,7 +340,7 @@ class CorsServiceTest extends TestCase
 
     public function testCanHandleUnconfiguredRouteMatch()
     {
-        $routeMatch = new RouteMatch([]);
+        $routeMatch = class_exists(DeprecatedRouteMatch::class) ? new DeprecatedRouteMatch([]) : new RouteMatch([]);
 
         $request = new HttpRequest();
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
@@ -363,7 +364,8 @@ class CorsServiceTest extends TestCase
 
     public function testCanHandleConfiguredRouteMatch()
     {
-        $routeMatch = new RouteMatch([
+
+        $routeMatchParameters = [
             CorsOptions::ROUTE_PARAM => [
                 'allowed_origins'     => ['http://example.org'],
                 'allowed_methods'     => ['POST', 'DELETE', 'OPTIONS'],
@@ -372,7 +374,9 @@ class CorsServiceTest extends TestCase
                 'max_age'             => 5,
                 'allowed_credentials' => false,
             ],
-        ]);
+        ];
+
+        $routeMatch = class_exists(DeprecatedRouteMatch::class) ? new DeprecatedRouteMatch($routeMatchParameters) : new RouteMatch($routeMatchParameters);
 
         $request = new HttpRequest();
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.org');
