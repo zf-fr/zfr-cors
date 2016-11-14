@@ -28,6 +28,8 @@ use Zend\Stdlib\AbstractOptions;
  */
 class CorsOptions extends AbstractOptions
 {
+    const ROUTE_PARAM = 'cors';
+
     /**
      * Set the list of allowed origins domain with protocol.
      *

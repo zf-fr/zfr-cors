@@ -23,6 +23,7 @@ use Zend\EventManager\EventManagerInterface;
 use Zend\Http\Response as HttpResponse;
 use Zend\Http\Request as HttpRequest;
 use Zend\Mvc\MvcEvent;
+use Zend\Mvc\Router\Http\RouteMatch;
 use ZfrCors\Exception\DisallowedOriginException;
 use ZfrCors\Service\CorsService;
 
@@ -92,7 +93,12 @@ class CorsRequestListener extends AbstractListenerAggregate
         // Preflight -- return a response now!
         $this->isPreflight = true;
 
-        return $this->corsService->createPreflightCorsResponse($request);
+        $routeMatch = $event->getRouteMatch();
+        if (! $routeMatch instanceof RouteMatch) {
+            return $this->corsService->createPreflightCorsResponse($request);
+        }
+
+        return $this->corsService->createPreflightCorsResponseWithRouteOptions($request, $routeMatch);
     }
 
     /**

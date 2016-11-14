@@ -18,6 +18,7 @@
 
 namespace ZfrCors\Service;
 
+use Zend\Mvc\Router\Http\RouteMatch;
 use Zend\Uri\UriFactory;
 use ZfrCors\Exception\DisallowedOriginException;
 use ZfrCors\Options\CorsOptions;
@@ -108,6 +109,23 @@ class CorsService
         if ($this->options->getAllowedCredentials()) {
             $headers->addHeaderLine('Access-Control-Allow-Credentials', 'true');
         }
+
+        return $response;
+    }
+
+    /**
+     * Create a preflight response by adding the correspoding headers which are merged with per-route configuration
+     *
+     * @param HttpRequest $request
+     * @param RouteMatch  $routeMatch
+     *
+     * @return HttpResponse
+     */
+    public function createPreflightCorsResponseWithRouteOptions(HttpRequest $request, RouteMatch $routeMatch)
+    {
+        $options = $this->options;
+        $options->setFromArray($routeMatch->getParam(CorsOptions::ROUTE_PARAM) ?: []);
+        $response = $this->createPreflightCorsResponse($request);
 
         return $response;
     }
