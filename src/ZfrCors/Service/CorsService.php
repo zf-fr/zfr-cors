@@ -18,6 +18,7 @@
 
 namespace ZfrCors\Service;
 
+use Zend\Http\Header;
 use Zend\Uri\UriFactory;
 use ZfrCors\Exception\DisallowedOriginException;
 use ZfrCors\Options\CorsOptions;
@@ -62,7 +63,16 @@ class CorsService
             return false;
         }
 
-        $originUri  = UriFactory::factory($headers->get('Origin')->getFieldValue());
+        // Do not crash whole application because a user is sending invalid Origin values
+        // https://github.com/zf-fr/zfr-cors/issues/44
+
+        try {
+            $origin = $headers->get('Origin');
+        } catch (Header\Exception\InvalidArgumentException $exception) {
+            return false;
+        }
+
+        $originUri  = UriFactory::factory($origin->getFieldValue());
         $requestUri = $request->getUri();
 
         // According to the spec (http://tools.ietf.org/html/rfc6454#section-4), we should check host, port and scheme

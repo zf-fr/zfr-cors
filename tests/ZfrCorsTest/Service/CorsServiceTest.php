@@ -335,4 +335,15 @@ class CorsServiceTest extends TestCase
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
         $this->assertTrue($this->corsService->isCorsRequest($request));
     }
+
+    /**
+     * @see https://github.com/zf-fr/zfr-cors/issues/44
+     */
+    public function testDoesNotCrashApplicationOnInvalidOriginValue()
+    {
+        $request = new HttpRequest();
+        $request->setUri('https://example.com');
+        $request->getHeaders()->addHeaderLine('Origin', 'file:');
+        $this->assertFalse($this->corsService->isCorsRequest($request));
+    }
 }
