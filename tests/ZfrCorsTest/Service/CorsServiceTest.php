@@ -22,6 +22,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 use Zend\Http\Response as HttpResponse;
 use Zend\Http\Request as HttpRequest;
 use Zend\Mvc\MvcEvent;
+use ZfrCors\Exception\InvalidOriginException;
 use ZfrCors\Options\CorsOptions;
 use ZfrCors\Service\CorsService;
 
@@ -344,6 +345,7 @@ class CorsServiceTest extends TestCase
         $request = new HttpRequest();
         $request->setUri('https://example.com');
         $request->getHeaders()->addHeaderLine('Origin', 'file:');
-        $this->assertFalse($this->corsService->isCorsRequest($request));
+        $this->expectException(InvalidOriginException::class);
+        $this->corsService->isCorsRequest($request);
     }
 }

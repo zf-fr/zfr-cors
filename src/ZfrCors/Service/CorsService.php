@@ -21,6 +21,7 @@ namespace ZfrCors\Service;
 use Zend\Http\Header;
 use Zend\Uri\UriFactory;
 use ZfrCors\Exception\DisallowedOriginException;
+use ZfrCors\Exception\InvalidOriginException;
 use ZfrCors\Options\CorsOptions;
 use Zend\Http\Request as HttpRequest;
 use Zend\Http\Response as HttpResponse;
@@ -63,13 +64,10 @@ class CorsService
             return false;
         }
 
-        // Do not crash whole application because a user is sending invalid Origin values
-        // https://github.com/zf-fr/zfr-cors/issues/44
-
         try {
             $origin = $headers->get('Origin');
         } catch (Header\Exception\InvalidArgumentException $exception) {
-            return false;
+            throw InvalidOriginException::fromInvalidHeaderValue();
         }
 
         $originUri  = UriFactory::factory($origin->getFieldValue());
