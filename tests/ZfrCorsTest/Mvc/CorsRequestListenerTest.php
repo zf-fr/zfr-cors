@@ -138,4 +138,21 @@ class CorsRequestListenerTest extends TestCase
         $this->assertEquals(403, $newResponse->getStatusCode());
         $this->assertEquals('', $newResponse->getContent());
     }
+    
+
+    public function testNotThrowFatalErrorCorsRequest()
+    {
+        $mvcEvent = new MvcEvent();
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+
+        $request->getHeaders()->addHeaderLine('Origin', 'crazy-origin://invalid');
+
+        $mvcEvent->setRequest($request)
+            ->setResponse($response);
+
+        $newResponse = $this->corsListener->onCorsRequest($mvcEvent);
+
+        // Fatal error will be thrown here
+    }
 }
