@@ -22,7 +22,6 @@ use PHPUnit_Framework_TestCase as TestCase;
 use Zend\Http\Response as HttpResponse;
 use Zend\Http\Request as HttpRequest;
 use Zend\Mvc\MvcEvent;
-use ZfrCors\Exception\InvalidOriginException;
 use ZfrCors\Options\CorsOptions;
 use ZfrCors\Service\CorsService;
 
@@ -339,13 +338,13 @@ class CorsServiceTest extends TestCase
 
     /**
      * @see https://github.com/zf-fr/zfr-cors/issues/44
+     * @expectedException \ZfrCors\Exception\InvalidOriginException
      */
     public function testDoesNotCrashApplicationOnInvalidOriginValue()
     {
         $request = new HttpRequest();
         $request->setUri('https://example.com');
         $request->getHeaders()->addHeaderLine('Origin', 'file:');
-        $this->expectException(InvalidOriginException::class);
         $this->corsService->isCorsRequest($request);
     }
 }
