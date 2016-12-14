@@ -12,7 +12,7 @@ class InvalidOriginException extends DomainException implements ExceptionInterfa
 {
 
     /**
-     * @return static
+     * @return self
      */
     public static function fromInvalidHeaderValue()
     {
