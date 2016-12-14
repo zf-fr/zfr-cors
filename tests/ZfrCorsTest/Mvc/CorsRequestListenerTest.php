@@ -138,4 +138,22 @@ class CorsRequestListenerTest extends TestCase
         $this->assertEquals(403, $newResponse->getStatusCode());
         $this->assertEquals('', $newResponse->getContent());
     }
+
+    public function testImmediatelyReturnBadRequestResponseForInvalidOriginHeaderValue()
+    {
+        $mvcEvent = new MvcEvent();
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+
+        $request->getHeaders()->addHeaderLine('Origin', 'file:');
+
+        $mvcEvent->setRequest($request)
+            ->setResponse($response);
+
+        $returnedResponse = $this->corsListener->onCorsPreflight($mvcEvent);
+
+        $this->assertEquals($response, $returnedResponse);
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('', $response->getContent());
+    }
 }
