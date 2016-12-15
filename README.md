@@ -68,60 +68,61 @@ As by default, all the various options are set globally for all routes:
  * `allowed_credentials`: (boolean) If true, it allows the browser to send cookies along with the request.
 
 If you want to configure specific routes, you can add `ZfrCors\Options\CorsOptions::ROUTE_PARAM` to your route configuration:
-```
-    return [
-        'zfr_cors' => [
-            'allowed_origins' => ['*'],
-            'allowed_methods' => ['GET', 'POST', 'DELETE'],
-        ],
-        'router' => [
-            'routes' => [
-                'readOnlyRoute' => [
-                    'type' => 'literal',
-                    'options' => [
-                        'route' => '/foo/bar',
-                        'defaults' => [
-                            // This will replace allowed_methods configuration to only allow GET requests
-                            // and only allow a specific origin instead of the wildcard origin
-                            ZfrCors\Options\CorsOptions::ROUTE_PARAM => [
-                                'allowed_origins' => ['http://example.org'],
-                                'allowed_methods' => ['GET'],
-                            ],
+```php
+<?php
+
+return [
+    'zfr_cors' => [
+        'allowed_origins' => ['*'],
+        'allowed_methods' => ['GET', 'POST', 'DELETE'],
+    ],
+    'router' => [
+        'routes' => [
+            'readOnlyRoute' => [
+                'type' => 'literal',
+                'options' => [
+                    'route' => '/foo/bar',
+                    'defaults' => [
+                        // This will replace allowed_methods configuration to only allow GET requests
+                        // and only allow a specific origin instead of the wildcard origin
+                        ZfrCors\Options\CorsOptions::ROUTE_PARAM => [
+                            'allowed_origins' => ['http://example.org'],
+                            'allowed_methods' => ['GET'],
                         ],
                     ],
                 ],
-                'someAjaxCalls' => [
-                    'type' => 'literal',
-                    'options' => [
-                        'route' => '/ajax',
-                        'defaults' => [
-                            // This overrides the wildcard origin
-                            ZfrCors\Options\CorsOptions::ROUTE_PARAM => [
-                                'allowed_origins' => ['http://example.org'],
-                            ],
+            ],
+            'someAjaxCalls' => [
+                'type' => 'literal',
+                'options' => [
+                    'route' => '/ajax',
+                    'defaults' => [
+                        // This overrides the wildcard origin
+                        ZfrCors\Options\CorsOptions::ROUTE_PARAM => [
+                            'allowed_origins' => ['http://example.org'],
                         ],
                     ],
-                    'may_terminate' => false,
-                    'child_routes' => [
-                        'blog' => [
-                            'type' => 'literal',
-                            'options' => [
-                                'route' => '/blogpost,
-                                'defaults' => [
-                                    // This would only allow `http://example.org` to GET this route
-                                    'allowed_methods' => ['GET'],
-                                ],
+                ],
+                'may_terminate' => false,
+                'child_routes' => [
+                    'blog' => [
+                        'type' => 'literal',
+                        'options' => [
+                            'route' => '/blogpost',
+                            'defaults' => [
+                                // This would only allow `http://example.org` to GET this route
+                                'allowed_methods' => ['GET'],
                             ],
-                            'may_terminate' => true,
-                            'child_routes' => [
-                                'delete' => [
-                                    'type' => 'segment',
-                                    'options' => [
-                                        'route' => ':id',
-                                        // This would only allow origin `http://example.org` to apply DELETE on this route
-                                        defaults => [
-                                            'allowed_methods' => ['DELETE'],
-                                        ],
+                        ],
+                        'may_terminate' => true,
+                        'child_routes' => [
+                            'delete' => [
+                                'type' => 'segment',
+                                'options' => [
+                                    'route' => ':id',
+                                    // This would only allow origin `http://example.org` to apply DELETE on this route
+                                    'defaults' => [
+                                        'allowed_methods' => ['DELETE'],
                                     ],
                                 ],
                             ],
@@ -130,7 +131,8 @@ If you want to configure specific routes, you can add `ZfrCors\Options\CorsOptio
                 ],
             ],
         ],
-    ];
+    ],
+];
 ```
 
 ### Preflight request
