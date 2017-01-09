@@ -24,6 +24,7 @@ use Zend\Http\Response as HttpResponse;
 use Zend\Http\Request as HttpRequest;
 use Zend\Mvc\MvcEvent;
 use ZfrCors\Exception\DisallowedOriginException;
+use ZfrCors\Exception\InvalidOriginException;
 use ZfrCors\Service\CorsService;
 
 /**
@@ -78,14 +79,24 @@ class CorsRequestListener extends AbstractListenerAggregate
         $this->isPreflight = false;
 
         /** @var $request HttpRequest */
-        $request  = $event->getRequest();
+        $request = $event->getRequest();
 
-        if (! $request instanceof HttpRequest || ! $this->corsService->isCorsRequest($request)) {
+        if (! $request instanceof HttpRequest) {
             return;
         }
 
+        try {
+            $isCorsRequest = $this->corsService->isCorsRequest($request);
+        } catch (InvalidOriginException $exception) {
+            /** @var HttpResponse $response */
+            $response = $event->getResponse();
+            $response->setStatusCode(400);
+            $response->setReasonPhrase($exception->getMessage());
+            return $response;
+        }
+
         // If this isn't a preflight, done
-        if (! $this->corsService->isPreflightRequest($request)) {
+        if (! $isCorsRequest || ! $this->corsService->isPreflightRequest($request)) {
             return;
         }
 
