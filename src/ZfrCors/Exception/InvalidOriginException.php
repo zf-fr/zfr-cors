@@ -10,7 +10,6 @@ use DomainException;
  */
 class InvalidOriginException extends DomainException implements ExceptionInterface
 {
-
     /**
      * @return self
      */

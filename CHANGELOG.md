@@ -1,3 +1,11 @@
+# 1.4.0
+
+- ZfrCors will now return a 400 error if an invalid `Origin` value is sent.
+
+# 1.3.1
+
+- Add compatibility with Zend Component Installer
+
 # 1.3.0
 
 - Provides compatibility with ZF3 components (especially ServiceManager v3 and EventManager v3) [#37]
