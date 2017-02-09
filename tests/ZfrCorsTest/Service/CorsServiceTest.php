@@ -400,4 +400,16 @@ class CorsServiceTest extends TestCase
 
         $this->assertFalse($headers->has('Access-Control-Allow-Credentials'));
     }
+
+    /**
+     * @see https://github.com/zf-fr/zfr-cors/issues/44
+     * @expectedException \ZfrCors\Exception\InvalidOriginException
+     */
+    public function testDoesNotCrashApplicationOnInvalidOriginValue()
+    {
+        $request = new HttpRequest();
+        $request->setUri('https://example.com');
+        $request->getHeaders()->addHeaderLine('Origin', 'file:');
+        $this->corsService->isCorsRequest($request);
+    }
 }
