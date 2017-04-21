@@ -134,7 +134,7 @@ class CorsRequestListener extends AbstractListenerAggregate
             // InvalidOriginException should already be handled by `CorsRequestListener::onCorsPreflight`
             return;
         }
-        
+
         // Also ensure that the vary header is set when no origin is set
         // to prevent reverse proxy caching a wrong request; causing all of the following
         // requests to fail due to missing CORS headers.
