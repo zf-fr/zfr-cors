@@ -156,4 +156,25 @@ class CorsRequestListenerTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('', $response->getContent());
     }
+    
+    /**
+     * Application always triggers `MvcEvent::EVENT_FINISH` and since the `CorsRequestListener` is listening on it, we
+     * should handle the exception aswell.
+     *
+     *
+     * @return void
+     */
+    public function testOnCorsRequestCanHandleInvalidOriginHeaderValue()
+    {
+        $mvcEvent = new MvcEvent();
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+    
+        $request->getHeaders()->addHeaderLine('Origin', 'file:');
+    
+        $mvcEvent->setRequest($request)
+            ->setResponse($response);
+    
+        $this->corsListener->onCorsRequest($mvcEvent);
+    }
 }
