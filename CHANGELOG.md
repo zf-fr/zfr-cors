@@ -2,6 +2,10 @@
 
 - ZfrCors now properly disallows `Access-Control-Allow-Origin: *` when the
   credentials flag is true. [#35]
+- The `CorsRequestListener` now no longer raises an exception when triggered
+  during `EVENT_FINISH` if the `Origin` header is invalid, and instead just
+  returns early. That condition is already found during pre-flight, which allows
+  ignoring it when returning the response. [#47]
 
 # 1.4.0
 
