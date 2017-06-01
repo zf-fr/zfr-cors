@@ -1,3 +1,8 @@
+# 1.4.1
+
+- ZfrCors now properly disallows `Access-Control-Allow-Origin: *` when the
+  credentials flag is true. [#35]
+
 # 1.4.0
 
 - ZfrCors will now return a 400 error if an invalid `Origin` value is sent.
