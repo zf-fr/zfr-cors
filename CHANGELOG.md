@@ -1,3 +1,10 @@
+# 1.5.0
+
+- You may now configure rules per-route within zend-mvc route configuration.
+  When detected, these will override any rules that were general to the
+  application. See the ["Configuring the Module" section of the
+  README](README.md#configuring-the-module) for full details.
+
 # 1.4.1
 
 - ZfrCors now properly disallows `Access-Control-Allow-Origin: *` when the
