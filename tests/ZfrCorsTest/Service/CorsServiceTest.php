@@ -22,6 +22,8 @@ use PHPUnit_Framework_TestCase as TestCase;
 use Zend\Http\Response as HttpResponse;
 use Zend\Http\Request as HttpRequest;
 use Zend\Mvc\MvcEvent;
+use Zend\Mvc\Router\Http\RouteMatch as DeprecatedRouteMatch;
+use Zend\Router\Http\RouteMatch;
 use ZfrCors\Options\CorsOptions;
 use ZfrCors\Service\CorsService;
 
@@ -334,6 +336,69 @@ class CorsServiceTest extends TestCase
         $request->setUri('https://example.com');
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
         $this->assertTrue($this->corsService->isCorsRequest($request));
+    }
+
+    public function testCanHandleUnconfiguredRouteMatch()
+    {
+        $routeMatch = class_exists(DeprecatedRouteMatch::class) ? new DeprecatedRouteMatch([]) : new RouteMatch([]);
+
+        $request = new HttpRequest();
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+        $response = $this->corsService->createPreflightCorsResponseWithRouteOptions($request, $routeMatch);
+
+        $headers = $response->getHeaders();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('', $response->getContent());
+        $this->assertEquals('http://example.com', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+        $this->assertEquals(
+            'GET, POST, PUT, DELETE, OPTIONS',
+            $headers->get('Access-Control-Allow-Methods')->getFieldValue()
+        );
+        $this->assertEquals('Content-Type, Accept', $headers->get('Access-Control-Allow-Headers')->getFieldValue());
+        $this->assertEquals(10, $headers->get('Access-Control-Max-Age')->getFieldValue());
+        $this->assertEquals(0, $headers->get('Content-Length')->getFieldValue());
+
+        $this->assertEquals('true', $headers->get('Access-Control-Allow-Credentials')->getFieldValue());
+    }
+
+    public function testCanHandleConfiguredRouteMatch()
+    {
+
+        $routeMatchParameters = [
+            CorsOptions::ROUTE_PARAM => [
+                'allowed_origins'     => ['http://example.org'],
+                'allowed_methods'     => ['POST', 'DELETE', 'OPTIONS'],
+                'allowed_headers'     => ['Content-Type', 'Accept', 'Cookie'],
+                'exposed_headers'     => ['Location'],
+                'max_age'             => 5,
+                'allowed_credentials' => false,
+            ],
+        ];
+
+        $routeMatch = class_exists(DeprecatedRouteMatch::class) ? new DeprecatedRouteMatch($routeMatchParameters) :
+            new RouteMatch($routeMatchParameters);
+
+        $request = new HttpRequest();
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.org');
+        $response = $this->corsService->createPreflightCorsResponseWithRouteOptions($request, $routeMatch);
+
+        $headers = $response->getHeaders();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('', $response->getContent());
+        $this->assertEquals('http://example.org', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+        $this->assertEquals(
+            'POST, DELETE, OPTIONS',
+            $headers->get('Access-Control-Allow-Methods')->getFieldValue()
+        );
+        $this->assertEquals(
+            'Content-Type, Accept, Cookie',
+            $headers->get('Access-Control-Allow-Headers')->getFieldValue()
+        );
+        $this->assertEquals(5, $headers->get('Access-Control-Max-Age')->getFieldValue());
+        $this->assertEquals(0, $headers->get('Content-Length')->getFieldValue());
+
+        $this->assertFalse($headers->has('Access-Control-Allow-Credentials'));
     }
 
     /**
