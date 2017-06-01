@@ -103,7 +103,7 @@ class CorsRequestListener extends AbstractListenerAggregate
         // Preflight -- return a response now!
         $this->isPreflight = true;
 
-        return $this->corsService->createPreflightCorsResponse($request);
+        return $this->corsService->createPreflightCorsResponseWithRouteOptions($request, $event->getRouteMatch());
     }
 
     /**

@@ -50,22 +50,91 @@ of -1. This means that this listener is executed AFTER the route has been matche
 
 ### Configuring the module
 
-As of now, all the various options are set globally for all routes:
+As by default, all the various options are set globally for all routes:
 
- * `allowed_origins`: (array) List of allowed origins. To allow any origin, you can use the wildcard (`*`) character. If
-   multiple origins are specified, ZfrCors will automatically check the `"Origin"` header's value, and only return the
-   allowed domain (if any) in the `"Allow-Access-Control-Origin"` response header. To allow any sub-domain, you can prefix 
-   the domain with the wildcard character (i.e. *.example.com). Please note that you don't need to
-   add your host URI (so if your website is hosted as "example.com", "example.com" is automatically allowed.
- * `allowed_methods`: (array) List of allowed HTTP methods. Those methods will be returned for the preflight request to
-   indicate which methods are allowed to the user agent. You can even specify custom HTTP verbs.
- * `allowed_headers`: (array) List of allowed headers that will be returned for the preflight request. This indicates
-   to the user agent which headers are permitted to be sent when doing the actual request.
- * `max_age`: (int) Maximum age (seconds) the preflight request should be cached by the user agent. This prevents the
-   user agent from sending a preflight request for each request.
- * `exposed_headers`: (array) List of response headers that are allowed to be read in the user agent. Please note that
-   some browsers do not implement this feature correctly.
- * `allowed_credentials`: (boolean) If true, it allows the browser to send cookies along with the request.
+- `allowed_origins`: (array) List of allowed origins. To allow any origin, you can use the wildcard (`*`) character. If
+  multiple origins are specified, ZfrCors will automatically check the `"Origin"` header's value, and only return the
+  allowed domain (if any) in the `"Allow-Access-Control-Origin"` response header. To allow any sub-domain, you can prefix 
+  the domain with the wildcard character (i.e. `*.example.com`). Please note that you don't need to
+  add your host URI (so if your website is hosted as "example.com", "example.com" is automatically allowed.
+- `allowed_methods`: (array) List of allowed HTTP methods. Those methods will be returned for the preflight request to
+  indicate which methods are allowed to the user agent. You can even specify custom HTTP verbs.
+- `allowed_headers`: (array) List of allowed headers that will be returned for the preflight request. This indicates
+  to the user agent which headers are permitted to be sent when doing the actual request.
+- `max_age`: (int) Maximum age (seconds) the preflight request should be cached by the user agent. This prevents the
+  user agent from sending a preflight request for each request.
+- `exposed_headers`: (array) List of response headers that are allowed to be read in the user agent. Please note that
+  some browsers do not implement this feature correctly.
+- `allowed_credentials`: (boolean) If true, it allows the browser to send cookies along with the request.
+
+If you want to configure specific routes, you can add `ZfrCors\Options\CorsOptions::ROUTE_PARAM` to your route configuration:
+
+```php
+<?php
+
+return [
+    'zfr_cors' => [
+        'allowed_origins' => ['*'],
+        'allowed_methods' => ['GET', 'POST', 'DELETE'],
+    ],
+    'router' => [
+        'routes' => [
+            'readOnlyRoute' => [
+                'type' => 'literal',
+                'options' => [
+                    'route' => '/foo/bar',
+                    'defaults' => [
+                        // This will replace allowed_methods configuration to only allow GET requests
+                        // and only allow a specific origin instead of the wildcard origin
+                        ZfrCors\Options\CorsOptions::ROUTE_PARAM => [
+                            'allowed_origins' => ['http://example.org'],
+                            'allowed_methods' => ['GET'],
+                        ],
+                    ],
+                ],
+            ],
+            'someAjaxCalls' => [
+                'type' => 'literal',
+                'options' => [
+                    'route' => '/ajax',
+                    'defaults' => [
+                        // This overrides the wildcard origin
+                        ZfrCors\Options\CorsOptions::ROUTE_PARAM => [
+                            'allowed_origins' => ['http://example.org'],
+                        ],
+                    ],
+                ],
+                'may_terminate' => false,
+                'child_routes' => [
+                    'blog' => [
+                        'type' => 'literal',
+                        'options' => [
+                            'route' => '/blogpost',
+                            'defaults' => [
+                                // This would only allow `http://example.org` to GET this route
+                                'allowed_methods' => ['GET'],
+                            ],
+                        ],
+                        'may_terminate' => true,
+                        'child_routes' => [
+                            'delete' => [
+                                'type' => 'segment',
+                                'options' => [
+                                    'route' => ':id',
+                                    // This would only allow origin `http://example.org` to apply DELETE on this route
+                                    'defaults' => [
+                                        'allowed_methods' => ['DELETE'],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+];
+```
 
 ### Preflight request
 
