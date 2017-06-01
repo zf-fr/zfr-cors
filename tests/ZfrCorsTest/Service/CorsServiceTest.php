@@ -16,7 +16,7 @@
  * and is licensed under the MIT license.
  */
 
-namespace ZfrCorsTest\Mvc;
+namespace ZfrCorsTest\Service;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\Http\Response as HttpResponse;
@@ -160,7 +160,7 @@ class CorsServiceTest extends TestCase
         $response = $this->corsService->createPreflightCorsResponse($request);
 
         $headers = $response->getHeaders();
-        $this->assertEquals('*', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
+        $this->assertEquals('http://funny-origin.com', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
     }
 
     public function testCanReturnWildCardSubDomainAllowOrigin()
