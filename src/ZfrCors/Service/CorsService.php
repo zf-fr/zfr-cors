@@ -105,7 +105,7 @@ class CorsService
     public function createPreflightCorsResponse(HttpRequest $request)
     {
         $response = new HttpResponse();
-        $response->setStatusCode(200);
+        $response->setStatusCode(204);
 
         $headers = $response->getHeaders();
 
@@ -113,7 +113,6 @@ class CorsService
         $headers->addHeaderLine('Access-Control-Allow-Methods', implode(', ', $this->options->getAllowedMethods()));
         $headers->addHeaderLine('Access-Control-Allow-Headers', implode(', ', $this->options->getAllowedHeaders()));
         $headers->addHeaderLine('Access-Control-Max-Age', $this->options->getMaxAge());
-        $headers->addHeaderLine('Content-Length', 0);
 
         if ($this->options->getAllowedCredentials()) {
             $headers->addHeaderLine('Access-Control-Allow-Credentials', 'true');
