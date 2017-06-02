@@ -139,7 +139,7 @@ return [
 ### Preflight request
 
 If ZfrCors detects a preflight CORS request, a new HTTP response will be created, and ZfrCors will send the appropriate
-headers according to your configuration. The response will be always sent with a 200 status code (OK).
+headers according to your configuration. The response will be always sent with a 204 status code (No Content).
 
 Please note that this will also prevent further MVC steps from being executed, since all subsequent MVC steps are
 skipped till `Zend\Mvc\MvcEvent::EVENT_FINISH`, which is responsible for actually sending the response.

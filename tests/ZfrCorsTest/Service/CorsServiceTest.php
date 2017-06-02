@@ -127,7 +127,7 @@ class CorsServiceTest extends TestCase
 
         $headers = $response->getHeaders();
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals('', $response->getContent());
         $this->assertEquals('http://example.com', $headers->get('Access-Control-Allow-Origin')->getFieldValue());
         $this->assertEquals(
