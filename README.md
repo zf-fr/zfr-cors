@@ -147,7 +147,7 @@ skipped till `Zend\Mvc\MvcEvent::EVENT_FINISH`, which is responsible for actuall
 ### Actual request
 
 When an actual request is made, ZfrCors first checks it the origin is allowed. If it is not, then a new response with
-a 403 status code (Unauthorized) is created and sent.
+a 403 status code (Forbidden) is created and sent.
 
 Please note that this will also prevent further MVC steps from being executed, since all subsequent MVC steps are
 skipped till `Zend\Mvc\MvcEvent::EVENT_FINISH`, which is responsible for actually sending the response.
