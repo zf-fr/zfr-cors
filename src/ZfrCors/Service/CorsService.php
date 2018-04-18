@@ -22,6 +22,7 @@ use Zend\Mvc\Router\Http\RouteMatch as DeprecatedRouteMatch;
 use Zend\Router\Http\RouteMatch;
 use Zend\Http\Header;
 use Zend\Uri\UriFactory;
+use Zend\Uri\Exception\InvalidArgumentException as UriInvalidException;
 use ZfrCors\Exception\DisallowedOriginException;
 use ZfrCors\Exception\InvalidOriginException;
 use ZfrCors\Options\CorsOptions;
@@ -69,6 +70,8 @@ class CorsService
         try {
             $origin = $headers->get('Origin');
         } catch (Header\Exception\InvalidArgumentException $exception) {
+            throw InvalidOriginException::fromInvalidHeaderValue();
+        } catch (UriInvalidException $exception) {
             throw InvalidOriginException::fromInvalidHeaderValue();
         }
 
