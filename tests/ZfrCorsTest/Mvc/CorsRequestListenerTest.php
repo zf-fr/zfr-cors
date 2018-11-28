@@ -19,9 +19,19 @@
 namespace ZfrCorsTest\Mvc;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use Zend\Http\Response as HttpResponse;
+use Zend\EventManager\EventManager;
+use Zend\EventManager\EventManagerInterface;
+use Zend\EventManager\ResponseCollection;
+use Zend\Http\PhpEnvironment\Request;
 use Zend\Http\Request as HttpRequest;
+use Zend\Http\Response as HttpResponse;
+use Zend\Http\Response;
+use Zend\Mvc\Application;
 use Zend\Mvc\MvcEvent;
+use Zend\Mvc\RouteListener;
+use Zend\Router\Http\TreeRouteStack;
+use Zend\Stdlib\ResponseInterface;
+use Zend\Uri\Uri;
 use ZfrCors\Mvc\CorsRequestListener;
 use ZfrCors\Options\CorsOptions;
 use ZfrCors\Service\CorsService;
@@ -32,10 +42,11 @@ use ZfrCors\Service\CorsService;
  * @author Michaël Gallego <mic.gallego@gmail.com>
  *
  * @covers \ZfrCors\Mvc\CorsRequestListener
- * @group Coverage
+ * @group  Coverage
  */
 class CorsRequestListenerTest extends TestCase
 {
+
     /**
      * @var CorsService
      */
@@ -53,8 +64,8 @@ class CorsRequestListenerTest extends TestCase
 
     public function setUp()
     {
-        $this->corsOptions  = new CorsOptions();
-        $this->corsService  = new CorsService($this->corsOptions);
+        $this->corsOptions = new CorsOptions();
+        $this->corsService = new CorsService($this->corsOptions);
         $this->corsListener = new CorsRequestListener($this->corsService);
     }
 
@@ -77,11 +88,11 @@ class CorsRequestListenerTest extends TestCase
     public function testReturnNothingForNonCorsRequest()
     {
         $mvcEvent = new MvcEvent();
-        $request  = new HttpRequest();
+        $request = new HttpRequest();
         $response = new HttpResponse();
 
         $mvcEvent->setRequest($request)
-                 ->setResponse($response);
+            ->setResponse($response);
 
         $this->assertNull($this->corsListener->onCorsPreflight($mvcEvent));
         $this->assertNull($this->corsListener->onCorsRequest($mvcEvent));
@@ -90,7 +101,7 @@ class CorsRequestListenerTest extends TestCase
     public function testImmediatelyReturnResponseForPreflightCorsRequest()
     {
         $mvcEvent = new MvcEvent();
-        $request  = new HttpRequest();
+        $request = new HttpRequest();
         $response = new HttpResponse();
 
         $request->setMethod('OPTIONS');
@@ -98,7 +109,7 @@ class CorsRequestListenerTest extends TestCase
         $request->getHeaders()->addHeaderLine('Access-Control-Request-Method', 'POST');
 
         $mvcEvent->setRequest($request)
-                 ->setResponse($response);
+            ->setResponse($response);
 
         $this->assertInstanceOf('Zend\Http\Response', $this->corsListener->onCorsPreflight($mvcEvent));
     }
@@ -106,7 +117,7 @@ class CorsRequestListenerTest extends TestCase
     public function testReturnNothingForNormalAuthorizedCorsRequest()
     {
         $mvcEvent = new MvcEvent();
-        $request  = new HttpRequest();
+        $request = new HttpRequest();
         $response = new HttpResponse();
 
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
@@ -114,7 +125,7 @@ class CorsRequestListenerTest extends TestCase
         $this->corsOptions->setAllowedOrigins(['http://example.com']);
 
         $mvcEvent->setRequest($request)
-                 ->setResponse($response);
+            ->setResponse($response);
 
         $this->assertNull($this->corsListener->onCorsRequest($mvcEvent));
     }
@@ -122,13 +133,13 @@ class CorsRequestListenerTest extends TestCase
     public function testReturnUnauthorizedResponseForNormalUnauthorizedCorsRequest()
     {
         $mvcEvent = new MvcEvent();
-        $request  = new HttpRequest();
+        $request = new HttpRequest();
         $response = new HttpResponse();
 
         $request->getHeaders()->addHeaderLine('Origin', 'http://unauthorized-domain.com');
 
         $mvcEvent->setRequest($request)
-                 ->setResponse($response);
+            ->setResponse($response);
 
         $this->corsListener->onCorsRequest($mvcEvent);
 
@@ -142,7 +153,7 @@ class CorsRequestListenerTest extends TestCase
     public function testImmediatelyReturnBadRequestResponseForInvalidOriginHeaderValue()
     {
         $mvcEvent = new MvcEvent();
-        $request  = new HttpRequest();
+        $request = new HttpRequest();
         $response = new HttpResponse();
 
         $request->getHeaders()->addHeaderLine('Origin', 'file:');
@@ -167,7 +178,7 @@ class CorsRequestListenerTest extends TestCase
     public function testOnCorsRequestCanHandleInvalidOriginHeaderValue()
     {
         $mvcEvent = new MvcEvent();
-        $request  = new HttpRequest();
+        $request = new HttpRequest();
         $response = new HttpResponse();
 
         $request->getHeaders()->addHeaderLine('Origin', 'file:');
@@ -176,5 +187,110 @@ class CorsRequestListenerTest extends TestCase
             ->setResponse($response);
 
         $this->corsListener->onCorsRequest($mvcEvent);
+    }
+
+    /**
+     * This is some kind of integration test, not quite sure if this is the correct place where to put that
+     * but I recently realized this in our production environment.
+     */
+    public function testPreflightWorksWithMethodRoutes()
+    {
+        $router = new TreeRouteStack();
+        $router
+            ->addRoutes([
+                'home' => [
+                    'type' => 'literal',
+                    'options' => [
+                        'route' => '/foo',
+                    ],
+                    'may_terminate' => false,
+                    'child_routes' => [
+                        'get' => [
+                            'type' => 'method',
+                            'options' => [
+                                'verb' => 'get',
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
+
+        // Copy & paste from Application::run
+        // Define callback used to determine whether or not to short-circuit
+        $event = $this->getMockBuilder(MvcEvent::class)->getMock();
+        $event
+            ->expects($this->any())
+            ->method('getName')
+            ->willReturn(MvcEvent::EVENT_ROUTE);
+
+        $event
+            ->expects($this->any())
+            ->method('getRouter')
+            ->willReturn($router);
+
+        $request = new Request();
+        $request->setRequestUri(new Uri('/foo'));
+        $request->setMethod('OPTIONS');
+
+        $event
+            ->expects($this->any())
+            ->method('getRequest')
+            ->willReturn($request);
+
+        $events = new EventManager();
+
+        $target = $this
+            ->getMockBuilder(Application::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $eventManagerMock = $this
+            ->getMockBuilder(EventManagerInterface::class)
+            ->getMock();
+
+        $responses = new ResponseCollection();
+        $responses->add(0, new Response());
+
+        $eventManagerMock
+            ->expects($this->once())
+            ->method('triggerEvent')
+            ->willReturn($responses);
+
+        $target
+            ->expects($this->any())
+            ->method('getEventManager')
+            ->willReturn($eventManagerMock);
+
+        $event
+            ->expects($this->any())
+            ->method('getTarget')
+            ->willReturn($target);
+
+        (new RouteListener())->attach($events);
+        $corsService = $this
+            ->getMockBuilder(CorsService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $corsService
+            ->expects($this->once())
+            ->method('isCorsRequest')
+            ->with($request)
+            ->willReturn(true);
+
+        $corsRequestListener = new CorsRequestListener($corsService);
+        $corsRequestListener->attach($events);
+
+        $shortCircuit = function ($r) use ($event) {
+            if ($r instanceof ResponseInterface) {
+                return true;
+            }
+            if ($event->getError()) {
+                return true;
+            }
+            return false;
+        };
+
+        $events->triggerEventUntil($shortCircuit, $event);
     }
 }
