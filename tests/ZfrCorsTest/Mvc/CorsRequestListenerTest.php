@@ -245,7 +245,7 @@ class CorsRequestListenerTest extends TestCase
             ->getMock();
 
         $eventManagerMock = $this
-            ->getMockBuilder(EventManagerInterface::class)
+            ->getMockBuilder(EventManager::class)
             ->getMock();
 
         $responses = new ResponseCollection();
