@@ -112,7 +112,9 @@ return [
                             'route' => '/blogpost',
                             'defaults' => [
                                 // This would only allow `http://example.org` to GET this route
-                                'allowed_methods' => ['GET'],
+                                ZfrCors\Options\CorsOptions::ROUTE_PARAM => [
+                                    'allowed_methods' => ['GET'],
+                                ],
                             ],
                         ],
                         'may_terminate' => true,
@@ -123,7 +125,9 @@ return [
                                     'route' => ':id',
                                     // This would only allow origin `http://example.org` to apply DELETE on this route
                                     'defaults' => [
-                                        'allowed_methods' => ['DELETE'],
+                                        ZfrCors\Options\CorsOptions::ROUTE_PARAM => [
+                                            'allowed_methods' => ['DELETE'],
+                                        ],
                                     ],
                                 ],
                             ],
