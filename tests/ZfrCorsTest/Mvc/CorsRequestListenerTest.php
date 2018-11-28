@@ -76,7 +76,7 @@ class CorsRequestListenerTest extends TestCase
         $eventManager
             ->expects($this->at(0))
             ->method('attach')
-            ->with(MvcEvent::EVENT_ROUTE, $this->isType('callable'), $this->LessThan(1));
+            ->with(MvcEvent::EVENT_ROUTE, $this->isType('callable'), $this->equalTo(2));
         $eventManager
             ->expects($this->at(1))
             ->method('attach')
@@ -91,7 +91,8 @@ class CorsRequestListenerTest extends TestCase
         $request = new HttpRequest();
         $response = new HttpResponse();
 
-        $mvcEvent->setRequest($request)
+        $mvcEvent
+            ->setRequest($request)
             ->setResponse($response);
 
         $this->assertNull($this->corsListener->onCorsPreflight($mvcEvent));
@@ -103,13 +104,16 @@ class CorsRequestListenerTest extends TestCase
         $mvcEvent = new MvcEvent();
         $request = new HttpRequest();
         $response = new HttpResponse();
+        $router = new TreeRouteStack();
 
         $request->setMethod('OPTIONS');
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
         $request->getHeaders()->addHeaderLine('Access-Control-Request-Method', 'POST');
 
-        $mvcEvent->setRequest($request)
-            ->setResponse($response);
+        $mvcEvent
+            ->setRequest($request)
+            ->setResponse($response)
+            ->setRouter($router);
 
         $this->assertInstanceOf('Zend\Http\Response', $this->corsListener->onCorsPreflight($mvcEvent));
     }
@@ -124,7 +128,8 @@ class CorsRequestListenerTest extends TestCase
 
         $this->corsOptions->setAllowedOrigins(['http://example.com']);
 
-        $mvcEvent->setRequest($request)
+        $mvcEvent
+            ->setRequest($request)
             ->setResponse($response);
 
         $this->assertNull($this->corsListener->onCorsRequest($mvcEvent));
@@ -138,7 +143,8 @@ class CorsRequestListenerTest extends TestCase
 
         $request->getHeaders()->addHeaderLine('Origin', 'http://unauthorized-domain.com');
 
-        $mvcEvent->setRequest($request)
+        $mvcEvent
+            ->setRequest($request)
             ->setResponse($response);
 
         $this->corsListener->onCorsRequest($mvcEvent);
@@ -155,11 +161,14 @@ class CorsRequestListenerTest extends TestCase
         $mvcEvent = new MvcEvent();
         $request = new HttpRequest();
         $response = new HttpResponse();
+        $router = new TreeRouteStack();
 
         $request->getHeaders()->addHeaderLine('Origin', 'file:');
 
-        $mvcEvent->setRequest($request)
-            ->setResponse($response);
+        $mvcEvent
+            ->setRequest($request)
+            ->setResponse($response)
+            ->setRouter($router);
 
         $returnedResponse = $this->corsListener->onCorsPreflight($mvcEvent);
 
@@ -183,7 +192,8 @@ class CorsRequestListenerTest extends TestCase
 
         $request->getHeaders()->addHeaderLine('Origin', 'file:');
 
-        $mvcEvent->setRequest($request)
+        $mvcEvent
+            ->setRequest($request)
             ->setResponse($response);
 
         $this->corsListener->onCorsRequest($mvcEvent);

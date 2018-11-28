@@ -153,7 +153,7 @@ class CorsService
     {
         $origin = $this->getAllowedOriginValue($request);
 
-        // If $origin is "null", then it means than the origin is not allowed. As this is
+        // If $origin is "null", then it means that the origin is not allowed. As this is
         // a simple request, it is useless to continue the processing as it will be refused
         // by the browser anyway, so we throw an exception
         if ($origin === 'null') {
