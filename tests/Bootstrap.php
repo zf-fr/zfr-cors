@@ -53,6 +53,6 @@ ServiceManagerFactory::setApplicationConfig($config);
 unset($files, $file, $loader, $configFiles, $configFile, $config);
 
 
-if (!class_exists(TreeRouteStack::class)) {
+if (! class_exists(TreeRouteStack::class)) {
     class_alias(\Zend\Mvc\Router\Http\TreeRouteStack::class, TreeRouteStack::class);
 }
