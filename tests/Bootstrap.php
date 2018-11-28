@@ -16,6 +16,7 @@
  * and is licensed under the MIT license.
  */
 
+use Zend\Router\Http\TreeRouteStack;
 use ZfrCorsTest\Util\ServiceManagerFactory;
 
 ini_set('error_reporting', E_ALL);
@@ -50,3 +51,8 @@ foreach ($configFiles as $configFile) {
 
 ServiceManagerFactory::setApplicationConfig($config);
 unset($files, $file, $loader, $configFiles, $configFile, $config);
+
+
+if (!class_exists(TreeRouteStack::class)) {
+    class_alias(\Zend\Mvc\Router\Http\TreeRouteStack::class, TreeRouteStack::class);
+}
