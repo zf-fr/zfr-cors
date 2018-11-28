@@ -72,6 +72,10 @@ class CorsService
             throw InvalidOriginException::fromInvalidHeaderValue();
         }
 
+        if (!$origin instanceof Header\Origin) {
+            throw InvalidOriginException::fromInvalidHeaderValue();
+        }
+
         $originUri  = UriFactory::factory($origin->getFieldValue());
         $requestUri = $request->getUri();
 
