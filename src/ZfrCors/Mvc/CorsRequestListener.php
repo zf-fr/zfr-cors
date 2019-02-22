@@ -156,7 +156,7 @@ class CorsRequestListener extends AbstractListenerAggregate
         // This is the second step of the CORS request, and we let ZF continue
         // processing the response
         try {
-            $response = $this->corsService->populateCorsResponse($request, $response);
+            $response = $this->corsService->populateCorsResponse($request, $response, $event->getRouteMatch());
         } catch (DisallowedOriginException $exception) {
             $response = new HttpResponse(); // Clear response for security
             $response->setStatusCode(403)

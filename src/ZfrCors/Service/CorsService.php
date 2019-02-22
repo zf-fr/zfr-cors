@@ -150,11 +150,16 @@ class CorsService
      *
      * @param  HttpRequest               $request
      * @param  HttpResponse              $response
+     * @param  null|RouteMatch           $routeMatch
      * @return HttpResponse
      * @throws DisallowedOriginException If the origin is not allowed
      */
-    public function populateCorsResponse(HttpRequest $request, HttpResponse $response)
+    public function populateCorsResponse(HttpRequest $request, HttpResponse $response, $routeMatch = null)
     {
+        if ($routeMatch instanceof RouteMatch) {
+            $this->options->setFromArray($routeMatch->getParam(CorsOptions::ROUTE_PARAM) ?: []);
+        }
+
         $origin = $this->getAllowedOriginValue($request);
 
         // If $origin is "null", then it means that the origin is not allowed. As this is
