@@ -156,7 +156,7 @@ class CorsService
      */
     public function populateCorsResponse(HttpRequest $request, HttpResponse $response, $routeMatch = null)
     {
-        if ($routeMatch instanceof RouteMatch) {
+        if ($routeMatch instanceof RouteMatch || $routeMatch instanceof DeprecatedRouteMatch) {
             $this->options->setFromArray($routeMatch->getParam(CorsOptions::ROUTE_PARAM) ?: []);
         }
 
