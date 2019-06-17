@@ -20,18 +20,11 @@ namespace ZfrCorsTest\Mvc;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\EventManager\EventManager;
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ResponseCollection;
-use Zend\Http\PhpEnvironment\Request;
 use Zend\Http\Request as HttpRequest;
 use Zend\Http\Response as HttpResponse;
-use Zend\Http\Response;
-use Zend\Mvc\Application;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\RouteListener;
 use Zend\Router\Http\TreeRouteStack;
-use Zend\Stdlib\ResponseInterface;
-use Zend\Uri\Uri;
 use ZfrCors\Mvc\CorsRequestListener;
 use ZfrCors\Options\CorsOptions;
 use ZfrCors\Service\CorsService;
@@ -199,12 +192,16 @@ class CorsRequestListenerTest extends TestCase
         $this->corsListener->onCorsRequest($mvcEvent);
     }
 
-    /**
-     * This is some kind of integration test, not quite sure if this is the correct place where to put that
-     * but I recently realized this in our production environment.
-     */
+
     public function testPreflightWorksWithMethodRoutes()
     {
+        $mvcEvent = new MvcEvent();
+        $request = new HttpRequest();
+        $request->setUri('/foo');
+        $request->setMethod('OPTIONS');
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+        $request->getHeaders()->addHeaderLine('Access-Control-Request-Method', 'GET');
+        $response = new HttpResponse();
         $router = new TreeRouteStack();
         $router
             ->addRoutes([
@@ -219,88 +216,41 @@ class CorsRequestListenerTest extends TestCase
                             'type' => 'method',
                             'options' => [
                                 'verb' => 'get',
+                                'defaults' => [
+                                    \ZfrCors\Options\CorsOptions::ROUTE_PARAM => [
+                                        'allowed_origins' => ['http://example.com'],
+                                        'allowed_methods' => ['GET'],
+                                    ],
+                                ]
                             ],
                         ],
                     ],
                 ],
             ]);
 
-        // Copy & paste from Application::run
-        // Define callback used to determine whether or not to short-circuit
-        $event = $this->getMockBuilder(MvcEvent::class)->getMock();
-        $event
-            ->expects($this->any())
-            ->method('getName')
-            ->willReturn(MvcEvent::EVENT_ROUTE);
-
-        $event
-            ->expects($this->any())
-            ->method('getRouter')
-            ->willReturn($router);
-
-        $request = new Request();
-        $request->setRequestUri(new Uri('/foo'));
-        $request->setMethod('OPTIONS');
-
-        $event
-            ->expects($this->any())
-            ->method('getRequest')
-            ->willReturn($request);
+        $mvcEvent
+            ->setRequest($request)
+            ->setResponse($response)
+            ->setRouter($router);
 
         $events = new EventManager();
-
-        $target = $this
-            ->getMockBuilder(Application::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $eventManagerMock = $this
-            ->getMockBuilder(EventManager::class)
-            ->getMock();
-
-        $responses = new ResponseCollection();
-        $responses->add(0, new Response());
-
-        $eventManagerMock
-            ->expects($this->once())
-            ->method('triggerEvent')
-            ->willReturn($responses);
-
-        $target
-            ->expects($this->any())
-            ->method('getEventManager')
-            ->willReturn($eventManagerMock);
-
-        $event
-            ->expects($this->any())
-            ->method('getTarget')
-            ->willReturn($target);
-
+        $this->corsListener->attach($events);
         (new RouteListener())->attach($events);
-        $corsService = $this
-            ->getMockBuilder(CorsService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
 
-        $corsService
-            ->expects($this->once())
-            ->method('isCorsRequest')
-            ->with($request)
-            ->willReturn(true);
+        $event = new MvcEvent(MvcEvent::EVENT_ROUTE);
+        $event->setRouter($router);
+        $event->setRequest($request);
 
-        $corsRequestListener = new CorsRequestListener($corsService);
-        $corsRequestListener->attach($events);
-
-        $shortCircuit = function ($r) use ($event) {
-            if ($r instanceof ResponseInterface) {
-                return true;
-            }
-            if ($event->getError()) {
-                return true;
-            }
-            return false;
+        $shortCircuit = function ($r) {
+            $this->assertInstanceOf(\Zend\Http\Response::class, $r);
+            $this->assertEquals(200, $r->getStatusCode());
+            $this->assertEquals('GET', $r->getHeaders()->get('Access-Control-Allow-Methods')->getFieldValue());
+            $this->assertEquals(
+                'http://example.com',
+                $r->getHeaders()->get('Access-Control-Allow-Origin')->getFieldValue()
+            );
+            return true;
         };
-
         $events->triggerEventUntil($shortCircuit, $event);
     }
 }
