@@ -38,7 +38,7 @@ class ModuleTest extends \PHPUnit\Framework\TestCase
     {
         $module = new Module();
 
-        $this->assertIsArray('array', $module->getConfig());
+        $this->assertIsArray($module->getConfig());
         $this->assertSame($module->getConfig(), unserialize(serialize($module->getConfig())), 'Config is serializable');
     }
 
