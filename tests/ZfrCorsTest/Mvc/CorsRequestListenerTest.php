@@ -18,7 +18,7 @@
 
 namespace ZfrCorsTest\Mvc;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use Zend\EventManager\EventManager;
 use Zend\Http\Request as HttpRequest;
 use Zend\Http\Response as HttpResponse;
@@ -190,6 +190,7 @@ class CorsRequestListenerTest extends TestCase
             ->setResponse($response);
 
         $this->corsListener->onCorsRequest($mvcEvent);
+        $this->expectNotToPerformAssertions();
     }
 
 

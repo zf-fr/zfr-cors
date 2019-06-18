@@ -18,7 +18,7 @@
 
 namespace ZfrCorsTest;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use ZfrCors\Module;
 
 /**
@@ -29,7 +29,7 @@ use ZfrCors\Module;
  *
  * @group Coverage
  */
-class ModuleTest extends PHPUnit_Framework_TestCase
+class ModuleTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @covers \ZfrCors\Module::getConfig
