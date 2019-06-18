@@ -9,52 +9,31 @@ cache:
 
 env:
   global:
-    - COMPOSER_ARGS="--no-interaction --ignore-platform-reqs"
+    - COMPOSER_ARGS="--no-interaction"
 
 matrix:
   fast_finish: true
   include:
-    - php: 5.6
+    - php: 7.1
       env:
         - DEPS=lowest
-    - php: 5.6
+    - php: 7.1
       env:
-        - DEPS=locked
+        - DEPS=latest
         - TEST_COVERAGE=true
-    - php: 5.6
-      env:
-        - DEPS=latest
-    - php: 7
+    - php: 7.2
       env:
         - DEPS=lowest
-    - php: 7
+    - php: 7.2
       env:
-        - DEPS=locked
+        - DEPS=latest
+    - php: 7.3
+      env:
+        - DEPS=lowest
+    - php: 7.3
+      env:
+        - DEPS=latest
         - CS_CHECK=true
-    - php: 7
-      env:
-        - DEPS=latest
-    - php: 7.1
-      env:
-        - DEPS=lowest
-    - php: 7.1
-      env:
-        - DEPS=locked
-        - CS_CHECK=true
-    - php: 7.1
-      env:
-        - DEPS=latest
-    - php: hhvm
-      env:
-        - DEPS=lowest
-    - php: hhvm
-      env:
-        - DEPS=locked
-    - php: hhvm
-      env:
-        - DEPS=latest
-  allow_failures:
-    - php: hhvm
 
 before_install:
   - if [[ $TEST_COVERAGE != 'true' ]]; then phpenv config-rm xdebug.ini || return 0 ; fi

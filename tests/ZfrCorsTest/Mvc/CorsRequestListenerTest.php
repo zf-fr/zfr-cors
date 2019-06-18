@@ -18,10 +18,13 @@
 
 namespace ZfrCorsTest\Mvc;
 
-use PHPUnit_Framework_TestCase as TestCase;
-use Zend\Http\Response as HttpResponse;
+use PHPUnit\Framework\TestCase as TestCase;
+use Zend\EventManager\EventManager;
 use Zend\Http\Request as HttpRequest;
+use Zend\Http\Response as HttpResponse;
 use Zend\Mvc\MvcEvent;
+use Zend\Mvc\RouteListener;
+use Zend\Router\Http\TreeRouteStack;
 use ZfrCors\Mvc\CorsRequestListener;
 use ZfrCors\Options\CorsOptions;
 use ZfrCors\Service\CorsService;
@@ -32,10 +35,11 @@ use ZfrCors\Service\CorsService;
  * @author Michaël Gallego <mic.gallego@gmail.com>
  *
  * @covers \ZfrCors\Mvc\CorsRequestListener
- * @group Coverage
+ * @group  Coverage
  */
 class CorsRequestListenerTest extends TestCase
 {
+
     /**
      * @var CorsService
      */
@@ -51,10 +55,10 @@ class CorsRequestListenerTest extends TestCase
      */
     protected $corsListener;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->corsOptions  = new CorsOptions();
-        $this->corsService  = new CorsService($this->corsOptions);
+        $this->corsOptions = new CorsOptions();
+        $this->corsService = new CorsService($this->corsOptions);
         $this->corsListener = new CorsRequestListener($this->corsService);
     }
 
@@ -65,7 +69,7 @@ class CorsRequestListenerTest extends TestCase
         $eventManager
             ->expects($this->at(0))
             ->method('attach')
-            ->with(MvcEvent::EVENT_ROUTE, $this->isType('callable'), $this->LessThan(1));
+            ->with(MvcEvent::EVENT_ROUTE, $this->isType('callable'), $this->equalTo(2));
         $eventManager
             ->expects($this->at(1))
             ->method('attach')
@@ -77,11 +81,12 @@ class CorsRequestListenerTest extends TestCase
     public function testReturnNothingForNonCorsRequest()
     {
         $mvcEvent = new MvcEvent();
-        $request  = new HttpRequest();
+        $request = new HttpRequest();
         $response = new HttpResponse();
 
-        $mvcEvent->setRequest($request)
-                 ->setResponse($response);
+        $mvcEvent
+            ->setRequest($request)
+            ->setResponse($response);
 
         $this->assertNull($this->corsListener->onCorsPreflight($mvcEvent));
         $this->assertNull($this->corsListener->onCorsRequest($mvcEvent));
@@ -90,15 +95,18 @@ class CorsRequestListenerTest extends TestCase
     public function testImmediatelyReturnResponseForPreflightCorsRequest()
     {
         $mvcEvent = new MvcEvent();
-        $request  = new HttpRequest();
+        $request = new HttpRequest();
         $response = new HttpResponse();
+        $router = new TreeRouteStack();
 
         $request->setMethod('OPTIONS');
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
         $request->getHeaders()->addHeaderLine('Access-Control-Request-Method', 'POST');
 
-        $mvcEvent->setRequest($request)
-                 ->setResponse($response);
+        $mvcEvent
+            ->setRequest($request)
+            ->setResponse($response)
+            ->setRouter($router);
 
         $this->assertInstanceOf('Zend\Http\Response', $this->corsListener->onCorsPreflight($mvcEvent));
     }
@@ -106,15 +114,16 @@ class CorsRequestListenerTest extends TestCase
     public function testReturnNothingForNormalAuthorizedCorsRequest()
     {
         $mvcEvent = new MvcEvent();
-        $request  = new HttpRequest();
+        $request = new HttpRequest();
         $response = new HttpResponse();
 
         $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
 
         $this->corsOptions->setAllowedOrigins(['http://example.com']);
 
-        $mvcEvent->setRequest($request)
-                 ->setResponse($response);
+        $mvcEvent
+            ->setRequest($request)
+            ->setResponse($response);
 
         $this->assertNull($this->corsListener->onCorsRequest($mvcEvent));
     }
@@ -122,13 +131,14 @@ class CorsRequestListenerTest extends TestCase
     public function testReturnUnauthorizedResponseForNormalUnauthorizedCorsRequest()
     {
         $mvcEvent = new MvcEvent();
-        $request  = new HttpRequest();
+        $request = new HttpRequest();
         $response = new HttpResponse();
 
         $request->getHeaders()->addHeaderLine('Origin', 'http://unauthorized-domain.com');
 
-        $mvcEvent->setRequest($request)
-                 ->setResponse($response);
+        $mvcEvent
+            ->setRequest($request)
+            ->setResponse($response);
 
         $this->corsListener->onCorsRequest($mvcEvent);
 
@@ -142,13 +152,16 @@ class CorsRequestListenerTest extends TestCase
     public function testImmediatelyReturnBadRequestResponseForInvalidOriginHeaderValue()
     {
         $mvcEvent = new MvcEvent();
-        $request  = new HttpRequest();
+        $request = new HttpRequest();
         $response = new HttpResponse();
+        $router = new TreeRouteStack();
 
         $request->getHeaders()->addHeaderLine('Origin', 'file:');
 
-        $mvcEvent->setRequest($request)
-            ->setResponse($response);
+        $mvcEvent
+            ->setRequest($request)
+            ->setResponse($response)
+            ->setRouter($router);
 
         $returnedResponse = $this->corsListener->onCorsPreflight($mvcEvent);
 
@@ -167,14 +180,77 @@ class CorsRequestListenerTest extends TestCase
     public function testOnCorsRequestCanHandleInvalidOriginHeaderValue()
     {
         $mvcEvent = new MvcEvent();
-        $request  = new HttpRequest();
+        $request = new HttpRequest();
         $response = new HttpResponse();
 
         $request->getHeaders()->addHeaderLine('Origin', 'file:');
 
-        $mvcEvent->setRequest($request)
+        $mvcEvent
+            ->setRequest($request)
             ->setResponse($response);
 
-        $this->corsListener->onCorsRequest($mvcEvent);
+        $this->assertNull($this->corsListener->onCorsRequest($mvcEvent));
+    }
+
+
+    public function testPreflightWorksWithMethodRoutes()
+    {
+        $mvcEvent = new MvcEvent();
+        $request = new HttpRequest();
+        $request->setUri('/foo');
+        $request->setMethod('OPTIONS');
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+        $request->getHeaders()->addHeaderLine('Access-Control-Request-Method', 'GET');
+        $response = new HttpResponse();
+        $router = new TreeRouteStack();
+        $router
+            ->addRoutes([
+                'home' => [
+                    'type' => 'literal',
+                    'options' => [
+                        'route' => '/foo',
+                    ],
+                    'may_terminate' => false,
+                    'child_routes' => [
+                        'get' => [
+                            'type' => 'method',
+                            'options' => [
+                                'verb' => 'get',
+                                'defaults' => [
+                                    \ZfrCors\Options\CorsOptions::ROUTE_PARAM => [
+                                        'allowed_origins' => ['http://example.com'],
+                                        'allowed_methods' => ['GET'],
+                                    ],
+                                ]
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
+
+        $mvcEvent
+            ->setRequest($request)
+            ->setResponse($response)
+            ->setRouter($router);
+
+        $events = new EventManager();
+        $this->corsListener->attach($events);
+        (new RouteListener())->attach($events);
+
+        $event = new MvcEvent(MvcEvent::EVENT_ROUTE);
+        $event->setRouter($router);
+        $event->setRequest($request);
+
+        $shortCircuit = function ($r) {
+            $this->assertInstanceOf(\Zend\Http\Response::class, $r);
+            $this->assertEquals(200, $r->getStatusCode());
+            $this->assertEquals('GET', $r->getHeaders()->get('Access-Control-Allow-Methods')->getFieldValue());
+            $this->assertEquals(
+                'http://example.com',
+                $r->getHeaders()->get('Access-Control-Allow-Origin')->getFieldValue()
+            );
+            return true;
+        };
+        $events->triggerEventUntil($shortCircuit, $event);
     }
 }

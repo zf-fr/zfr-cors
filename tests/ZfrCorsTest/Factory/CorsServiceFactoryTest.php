@@ -18,7 +18,7 @@
 
 namespace ZfrCorsTest\Factory;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use ZfrCorsTest\Util\ServiceManagerFactory;
 
 /**

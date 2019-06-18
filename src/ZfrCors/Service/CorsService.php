@@ -66,9 +66,9 @@ class CorsService
             return false;
         }
 
-        try {
-            $origin = $headers->get('Origin');
-        } catch (Header\Exception\InvalidArgumentException $exception) {
+        $origin = $headers->get('Origin');
+
+        if (! $origin instanceof Header\Origin) {
             throw InvalidOriginException::fromInvalidHeaderValue();
         }
 
@@ -146,14 +146,19 @@ class CorsService
      *
      * @param  HttpRequest               $request
      * @param  HttpResponse              $response
+     * @param  null|RouteMatch           $routeMatch
      * @return HttpResponse
      * @throws DisallowedOriginException If the origin is not allowed
      */
-    public function populateCorsResponse(HttpRequest $request, HttpResponse $response)
+    public function populateCorsResponse(HttpRequest $request, HttpResponse $response, $routeMatch = null)
     {
+        if ($routeMatch instanceof RouteMatch || $routeMatch instanceof DeprecatedRouteMatch) {
+            $this->options->setFromArray($routeMatch->getParam(CorsOptions::ROUTE_PARAM) ?: []);
+        }
+
         $origin = $this->getAllowedOriginValue($request);
 
-        // If $origin is "null", then it means than the origin is not allowed. As this is
+        // If $origin is "null", then it means that the origin is not allowed. As this is
         // a simple request, it is useless to continue the processing as it will be refused
         // by the browser anyway, so we throw an exception
         if ($origin === 'null') {
