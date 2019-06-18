@@ -189,8 +189,7 @@ class CorsRequestListenerTest extends TestCase
             ->setRequest($request)
             ->setResponse($response);
 
-        $this->corsListener->onCorsRequest($mvcEvent);
-        $this->expectNotToPerformAssertions();
+        $this->assertNull($this->corsListener->onCorsRequest($mvcEvent));
     }
 
 

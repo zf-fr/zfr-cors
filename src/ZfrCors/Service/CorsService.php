@@ -66,11 +66,7 @@ class CorsService
             return false;
         }
 
-        try {
-            $origin = $headers->get('Origin');
-        } catch (Header\Exception\InvalidArgumentException $exception) {
-            throw InvalidOriginException::fromInvalidHeaderValue();
-        }
+        $origin = $headers->get('Origin');
 
         if (! $origin instanceof Header\Origin) {
             throw InvalidOriginException::fromInvalidHeaderValue();
