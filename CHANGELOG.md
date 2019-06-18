@@ -1,3 +1,52 @@
+# CHANGELOG
+
+## 2.0.1 - YYYY-MM-DD
+
+### Added
+
+- Nothing.
+
+### Changed
+
+- Nothing. 
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
+## 2.0.0 - 2019-06-18
+
+### Added
+
+- [#59](https://github.com/zf-fr/zfr-cors/pull/59) Added support for php 7.1, 7.2 and 7.3 versions
+
+### Changed
+
+- [#54](https://github.com/zf-fr/zfr-cors/pull/54) [BC Break] Changed `\ZfrCors\Mvc\CorsRequestListener` event `MvcEvent::EVENT_ROUTE` priority with has slight chance to cause BC Break. 
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- [#59](https://github.com/zf-fr/zfr-cors/pull/59) Removed support for hhvm, php 5.6 and 7.0 versions
+
+### Fixed
+
+- [#53](https://github.com/zf-fr/zfr-cors/pull/53), [#54](https://github.com/zf-fr/zfr-cors/pull/54) Method Routes preflight
+- [#55](https://github.com/zf-fr/zfr-cors/pull/55) Fixed `README.md` documentation for route-based configurations
+- [#56](https://github.com/zf-fr/zfr-cors/pull/56) Fixed issue with `zendframework/zend-http` v2.8
+- [#58](https://github.com/zf-fr/zfr-cors/pull/58), [#57](https://github.com/zf-fr/zfr-cors/pull/57) The second step of the CORS request need router params
+
 # 1.5.0
 
 - You may now configure rules per-route within zend-mvc route configuration.

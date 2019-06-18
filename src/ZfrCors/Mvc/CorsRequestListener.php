@@ -61,7 +61,7 @@ class CorsRequestListener extends AbstractListenerAggregate
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         // Preflight can be handled during the route event, and should return early
-        $this->listeners[] = $events->attach(MvcEvent::EVENT_ROUTE, [$this, 'onCorsPreflight'], -1);
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_ROUTE, [$this, 'onCorsPreflight'], 2);
 
         // "in"flight should be handled during "FINISH" to ensure we operate on the actual route being returned
         $this->listeners[] = $events->attach(MvcEvent::EVENT_FINISH, [$this, 'onCorsRequest'], 100);
@@ -103,7 +103,15 @@ class CorsRequestListener extends AbstractListenerAggregate
         // Preflight -- return a response now!
         $this->isPreflight = true;
 
-        return $this->corsService->createPreflightCorsResponseWithRouteOptions($request, $event->getRouteMatch());
+        $router = $event->getRouter();
+
+        $requestForMatching = clone $request;
+        // Use the request method for route deteciton, which is being used during the request.
+        $requestForMatching->setMethod($request->getHeader('Access-Control-Request-Method')->getFieldValue());
+
+        $routeMatch = $router->match($requestForMatching);
+
+        return $this->corsService->createPreflightCorsResponseWithRouteOptions($request, $routeMatch);
     }
 
     /**
@@ -148,7 +156,7 @@ class CorsRequestListener extends AbstractListenerAggregate
         // This is the second step of the CORS request, and we let ZF continue
         // processing the response
         try {
-            $response = $this->corsService->populateCorsResponse($request, $response);
+            $response = $this->corsService->populateCorsResponse($request, $response, $event->getRouteMatch());
         } catch (DisallowedOriginException $exception) {
             $response = new HttpResponse(); // Clear response for security
             $response->setStatusCode(403)

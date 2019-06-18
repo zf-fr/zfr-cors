@@ -17,7 +17,7 @@ builds HTTP responses that follow the CORS documentation.
 Install the module by typing (or add it to your `composer.json` file):
 
 ```sh
-$ php composer.phar require zfr/zfr-cors:1.*
+$ php composer.phar require zfr/zfr-cors
 ```
 
 Then, enable it by adding "ZfrCors" in your `application.config.php` file.
@@ -112,7 +112,9 @@ return [
                             'route' => '/blogpost',
                             'defaults' => [
                                 // This would only allow `http://example.org` to GET this route
-                                'allowed_methods' => ['GET'],
+                                \ZfrCors\Options\CorsOptions::ROUTE_PARAM => [
+                                    'allowed_methods' => ['GET'],
+                                ],
                             ],
                         ],
                         'may_terminate' => true,
@@ -123,7 +125,9 @@ return [
                                     'route' => ':id',
                                     // This would only allow origin `http://example.org` to apply DELETE on this route
                                     'defaults' => [
-                                        'allowed_methods' => ['DELETE'],
+                                        \ZfrCors\Options\CorsOptions::ROUTE_PARAM => [
+                                            'allowed_methods' => ['DELETE'],
+                                        ],
                                     ],
                                 ],
                             ],

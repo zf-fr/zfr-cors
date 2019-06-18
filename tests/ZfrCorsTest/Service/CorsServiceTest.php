@@ -18,7 +18,7 @@
 
 namespace ZfrCorsTest\Service;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use Zend\Http\Response as HttpResponse;
 use Zend\Http\Request as HttpRequest;
 use Zend\Mvc\MvcEvent;
@@ -65,7 +65,7 @@ class CorsServiceTest extends TestCase
     /**
      * Set up
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -246,8 +246,24 @@ class CorsServiceTest extends TestCase
 
         $headers = $response->getHeaders();
 
-        $this->assertEquals(false, $headers->get('Origin'));
-        $this->assertNotEquals(false, $headers->get('Vary'));
+        $this->assertFalse($headers->get('Origin'));
+        $this->assertNotFalse($headers->get('Vary'));
+        $this->assertContains('Origin', $headers->get('Vary')->getFieldValue());
+    }
+
+    public function testEnsureNoVaryHeaderWhenAcceptsAnyOrigin()
+    {
+        $response = new HttpResponse();
+        $corsService = new CorsService(new CorsOptions([
+            'allowed_origins' => ['*']
+        ]));
+
+        $corsService->ensureVaryHeader($response);
+
+        $headers = $response->getHeaders();
+
+        $this->assertFalse($headers->get('Origin'));
+        $this->assertFalse($headers->get('Vary'));
     }
 
     public function testCanPopulateNormalCorsRequest()
@@ -272,10 +288,8 @@ class CorsServiceTest extends TestCase
 
         $request->getHeaders()->addHeaderLine('Origin', 'http://unauthorized.com');
 
-        $this->setExpectedException(
-            'ZfrCors\Exception\DisallowedOriginException',
-            'The origin "http://unauthorized.com" is not authorized'
-        );
+        $this->expectException(\ZfrCors\Exception\DisallowedOriginException::class);
+        $this->expectExceptionMessage('The origin "http://unauthorized.com" is not authorized');
 
         $this->corsService->populateCorsResponse($request, $response);
     }
@@ -403,13 +417,61 @@ class CorsServiceTest extends TestCase
 
     /**
      * @see https://github.com/zf-fr/zfr-cors/issues/44
-     * @expectedException \ZfrCors\Exception\InvalidOriginException
      */
     public function testDoesNotCrashApplicationOnInvalidOriginValue()
     {
         $request = new HttpRequest();
         $request->setUri('https://example.com');
         $request->getHeaders()->addHeaderLine('Origin', 'file:');
+        $this->expectException(\ZfrCors\Exception\InvalidOriginException::class);
         $this->corsService->isCorsRequest($request);
+    }
+
+    /**
+     * @see https://github.com/zf-fr/zfr-cors/issues/57
+     */
+    public function testCanPopulateNormalCorsRequestWithRouteMatch()
+    {
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+        $routeMatchParameters = [
+            CorsOptions::ROUTE_PARAM => [
+                'allowed_origins'     => ['http://example.org']
+            ],
+        ];
+
+        $routeMatch = class_exists(DeprecatedRouteMatch::class) ? new DeprecatedRouteMatch($routeMatchParameters) :
+            new RouteMatch($routeMatchParameters);
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.org');
+
+        $response = $this->corsService->populateCorsResponse($request, $response, $routeMatch);
+        $this->assertInstanceOf(\Zend\Http\Response::class, $response);
+        $this->assertEquals(
+            'http://example.org',
+            $response->getHeaders()->get('Access-Control-Allow-Origin')->getFieldValue()
+        );
+    }
+
+    /**
+     * @see https://github.com/zf-fr/zfr-cors/issues/57
+     */
+    public function testCanPopulateNormalCorsRequestWithRouteMatchRewriteException()
+    {
+        $request  = new HttpRequest();
+        $response = new HttpResponse();
+        $routeMatchParameters = [
+            CorsOptions::ROUTE_PARAM => [
+                'allowed_origins'     => ['http://example.org']
+            ],
+        ];
+
+        $routeMatch = class_exists(DeprecatedRouteMatch::class) ? new DeprecatedRouteMatch($routeMatchParameters) :
+            new RouteMatch($routeMatchParameters);
+
+        $request->getHeaders()->addHeaderLine('Origin', 'http://example.com');
+
+        $this->expectException(\ZfrCors\Exception\DisallowedOriginException::class);
+        $this->corsService->populateCorsResponse($request, $response, $routeMatch);
     }
 }
