@@ -59,6 +59,6 @@
         "cs-fix": "phpcbf",
         "test": "phpunit",
         "test-coverage": "phpunit --coverage-clover build/logs/clover.xml",
-        "upload-coverage": "coveralls -v"
+        "upload-coverage": "php-coveralls -v"
     }
 }
