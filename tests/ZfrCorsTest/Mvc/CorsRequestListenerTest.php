@@ -55,7 +55,7 @@ class CorsRequestListenerTest extends TestCase
      */
     protected $corsListener;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->corsOptions = new CorsOptions();
         $this->corsService = new CorsService($this->corsOptions);
