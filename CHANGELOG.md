@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 2.0.0 - YYYY-MM-DD
+## 2.0.0 - 2019-06-18
 
 ### Added
 
