@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## 2.0.1 - YYYY-MM-DD
+
+### Added
+
+- Nothing.
+
+### Changed
+
+- Nothing. 
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
 ## 2.0.0 - 2019-06-18
 
 ### Added
